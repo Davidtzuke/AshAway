@@ -1,5 +1,5 @@
-AshAway \| Software Engineering for CSAI \| Group 9 \| 9 October 2026 \|
-Version 1.1
+AshAway | Software Engineering for CSAI | Group 9
+Version 1.2 (revised after Task 2/3 feedback; original v1.1 kept as `SRS_v1.1_original.docx`)
 
 # 1. Introduction
 
@@ -30,75 +30,111 @@ availability is a dependency.
 
 # 2. User requirements
 
-The following describe outcomes needed by travellers or advisers, not
-particular algorithms or programming tools. Each can be checked in a
-user acceptance test.
+Each requirement describes a system function in terms a non-technical
+user can understand, with the metric used to check it in a user
+acceptance test.
 
-| **ID** | **User need / acceptance outcome**                                                                           | **Task 1 objective**            |
-|--------|--------------------------------------------------------------------------------------------------------------|---------------------------------|
-| UR1    | A traveller can request an assessment for a supported Greek destination and chosen travel dates.             | Place- and date-specific advice |
-| UR2    | A traveller can understand the destination’s risk level without needing specialist wildfire knowledge.       | Flag genuinely affected places  |
-| UR3    | A traveller can see why the risk level was assigned and when supporting information was recorded.            | Explain and date the evidence   |
-| UR4    | A traveller can tell a forecast apart from a confirmed incident, smoke observation or official warning.      | Trustworthy information         |
-| UR5    | A traveller can discover other supported destinations with lower estimated risk when suitable options exist. | Offer alternatives              |
-| UR6    | A traveller is warned when evidence is incomplete or too old to support a confident assessment.              | Avoid false reassurance         |
-| UR7    | A travel adviser can compare destinations for the same date range on a consistent basis.                     | Support trip decisions          |
+| **ID** | **Requirement** | **Success metric** | **Task 1 objective** |
+|--------|-----------------|--------------------|----------------------|
+| UR1 | The system shall allow a user to request a wildfire-risk assessment for a supported Greek destination and chosen travel dates. | ≥ 90% of test users complete a request without help | Place- and date-specific advice |
+| UR2 | The system shall show the destination's risk level in plain language that does not require wildfire knowledge. | ≥ 80% of test users correctly explain what the shown risk level means | Flag genuinely affected places |
+| UR3 | The system shall show why a risk level was given and when the supporting information was recorded. | 100% of assessments show reasons and dates; ≥ 80% of test users can name the main reason | Explain and date the evidence |
+| UR4 | The system shall make clear whether information is a forecast, a confirmed incident, a smoke observation or an official warning. | ≥ 90% of test users classify the information type correctly | Trustworthy information |
+| UR5 | The system shall suggest other supported destinations with lower estimated risk for the same dates, when such options exist. | Alternatives shown in 100% of high-risk results where a lower-risk option with adequate data exists | Offer alternatives |
+| UR6 | The system shall warn the user when the available information is incomplete or too old for a confident assessment. | 100% of test cases with missing/stale data show a warning | Avoid false reassurance |
+| UR7 | The system shall allow a travel adviser to compare destinations for the same date range on the same basis. | ≥ 80% of test advisers complete a two-destination comparison within 2 minutes | Support trip decisions |
 
 # 3. System requirements
 
 ## 3.1 Functional requirements
 
 Must = required for pilot; Should = planned if data and development time
-permit. \[AI\] identifies a function relying on a trained model.
+permit. \[AI\] identifies a function relying on a trained model. Each
+requirement is written as input → system behaviour → output.
 
-| **ID / Priority**   | **Required system action and observable result**                                                                                                    | **Linked user need** |
-|---------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|----------------------|
-| FR1 / Must          | Accept municipality, start date and end date; reject invalid intervals or unsupported places with an explanation.                                   | UR1                  |
-| FR2 / Must \[AI\]   | Generate low/medium/high risk per supported municipality and requested day, with query dates and generation time displayed.                         | UR2                  |
-| FR3 / Must          | Retrieve available fire, air-quality and disruption feeds automatically and show each displayed item’s source and timestamp.                        | UR3–4                |
-| FR4 / Must \[AI\]   | Explain the main signals contributing to the assessment using only evidence available for that location and period.                                 | UR3                  |
-| FR5 / Must          | Flag missing, stale or conflicting inputs; show “insufficient evidence” instead of an unqualified low-risk result when critical sources are absent. | UR6                  |
-| FR6 / Should \[AI\] | Offer lower-risk alternatives for the same dates, ranked only among destinations with adequate comparable coverage.                                 | UR5                  |
-| FR7 / Should        | Show a comparison of at least two destinations including risk, evidence recency and data coverage.                                                  | UR7                  |
-| FR8 / Must          | Label forecast, observation and official alert separately; link to official warnings when a link is available.                                      | UR4                  |
+| **ID / Priority** | **Input** | **System behaviour** | **Output** | **Success metric** | **Linked UR** |
+|---|---|---|---|---|---|
+| FR1 / Must | Municipality, start date, end date | The system shall validate that the place is supported and the interval is valid (start ≤ end, within May–Oct coverage). | Accepted request, or a rejection message stating the reason | 100% of invalid test inputs rejected with the correct reason | UR1 |
+| FR2 / Must \[AI\] | Valid request | The system shall compute a low/medium/high risk level per requested day for the municipality. | Daily risk levels with query dates and generation time | Recall ≥ 0.80 on affected destinations (held-out test years) | UR2 |
+| FR3 / Must | Scheduled trigger (automatic) | The system shall retrieve fire, air-quality and disruption feeds and store each item with source and timestamp. | Updated evidence store; source and time shown per displayed item | ≥ 95% of scheduled updates succeed; 100% of items carry source + timestamp | UR3, UR4 |
+| FR4 / Must \[AI\] | Risk result + evidence for that place and period | The system shall identify the main signals contributing to the result. | Short explanation listing the top contributing signals | 100% of explanations reference only evidence for that place/period | UR3 |
+| FR5 / Must | Evidence store state | The system shall detect missing, stale or conflicting critical inputs. | "Insufficient evidence" instead of an unqualified low-risk result | 100% of missing-source test cases produce the warning | UR6 |
+| FR6 / Should \[AI\] | Request with medium/high risk | The system shall rank other supported destinations for the same dates that have adequate data coverage. | Up to 3 lower-risk alternatives | Every alternative has lower risk and adequate coverage in 100% of test cases | UR5 |
+| FR7 / Should | Two or more destinations + one date range | The system shall assess all destinations on the same data and dates. | Side-by-side table of risk, evidence recency and coverage | Comparison generated for 100% of valid multi-destination requests | UR7 |
+| FR8 / Must | Evidence items | The system shall label each item as forecast, observation or official alert. | Labelled items, with link to official warning when available | 100% of displayed items labelled; 0 mislabelled in test set | UR4 |
+| FR9 / Must | Request outside supported municipalities or dates *(moved from NFR10)* | The system shall stop the assessment instead of guessing. | Explicit limitation message naming what is unsupported | 100% of out-of-scope test requests produce the message | UR1, UR6 |
 
 ## 3.2 Non-functional requirements
 
-| **ID / Category**         | **Constraint / verification criterion**                                                                                                                                                             | **Related function** |
-|---------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------|
-| NFR1 / Speed              | In pilot testing, at least 95% of cached assessments shall display within 5 seconds; otherwise show progress or an error.                                                                           | FR1–2, FR7           |
-| NFR2 / Data quality       | Data ingestion shall record raw and cleaned row counts, removed duplicates, missing-value rates, feature count and file size (MB/GB) for each training dataset version.                             | FR2–3                |
-| NFR3 / Input/output       | Automated updates shall log retrieval time, source failures and generated output; user input shall be municipality and dates, and output risk, explanation, evidence age and optional alternatives. | FR1–6                |
-| NFR4 / Traceability       | Each displayed observation shall carry source and observation time; each prediction shall be reproducible from a model version and data snapshot.                                                   | FR2–4                |
-| NFR5 / Resilience         | A failed external feed shall be marked unavailable; no values or incidents shall be fabricated or silently treated as zero.                                                                         | FR3–5                |
-| NFR6 / Usability & safety | Risk categories shall be described in words as well as colours, and every result shall state that it does not replace official safety advice.                                                       | FR2–8                |
-| NFR7 / Privacy            | A basic query shall not require an account; identifiable travel histories shall not be stored by default.                                                                                           | FR1, FR7             |
-| NFR8 / Evaluation \[AI\]  | The training record shall report train/dev/test counts and percentages, model alternatives, features, recall, precision, F2, AUPRC, calibration, training duration and inference latency.           | FR2, FR4, FR6        |
-| NFR9 / Validation \[AI\]  | The evaluation shall use held-out years rather than random neighbouring cell splits; alert thresholds shall be tuned on dev data to prioritise recall.                                              | FR2, FR6             |
-| NFR10 / Scope             | Unsupported municipalities or dates beyond available coverage shall produce an explicit limitation message.                                                                                         | FR1–2                |
+| **ID / Category** | **Constraint** | **Success metric** | **Related functional requirement** |
+|---|---|---|---|
+| NFR1 / Speed | Cached assessments shall display quickly; otherwise show progress or an error. | ≥ 95% of cached assessments shown within 5 s in pilot testing | FR1, FR2, FR7 |
+| NFR2 / Data quality | Data ingestion shall record raw and cleaned row counts, removed duplicates, missing-value rates, feature count and file size (MB/GB) for each training dataset version. | 100% of dataset versions have a complete data report | FR2, FR3 |
+| NFR3 / Input/output | Automated updates shall log retrieval time, source failures and generated output. User input is municipality and dates; output is risk, explanation, evidence age and optional alternatives. | 100% of update runs logged | FR1–FR6 |
+| NFR4 / Traceability | Each displayed observation shall carry source and observation time; each prediction shall be reproducible from a model version and data snapshot. | 100% of sampled predictions reproduced exactly | FR2–FR4 |
+| NFR5 / Resilience | A failed external feed shall be marked unavailable; no values or incidents shall be fabricated or silently treated as zero. | 0 fabricated/zero-filled values in feed-failure tests | FR3–FR5 |
+| NFR6 / Usability & safety | Risk levels shall be described in words as well as colours; every result shall state that it does not replace official safety advice. | 100% of result screens contain text label + disclaimer | FR2–FR8 |
+| NFR7 / Privacy | A basic query shall not require an account; identifiable travel histories shall not be stored by default. | 0 personal identifiers in stored query logs | FR1, FR7 |
+| NFR8 / Evaluation \[AI\] | The training record shall report train/val/test counts and percentages, model alternatives, features, recall, precision, F2, AUPRC, calibration, training time, number of boosting rounds and inference latency. | 100% of model versions have a complete training record | FR2, FR4, FR6 |
+| NFR9 / Validation \[AI\] | Evaluation shall use held-out years, not random splits of neighbouring cells; alert thresholds shall be tuned on validation data to prioritise recall. | Test years never used for training or threshold tuning | FR2, FR6 |
 
 # 4. AI-specific requirements
 
-AI1 — Fire prediction (FR2; NFR8–9): The initial candidate is XGBoost
-for mixed weather, vegetation, terrain and human-activity variables.
-Compare against a Fire Weather Index baseline and at least one
-alternative (e.g. random forest). Model selection shall use held-out
-results and practical training/inference cost, not complexity alone.
+**AI1 — Model choice (FR2; NFR8–9).** The first model is XGBoost for
+mixed weather, vegetation, terrain and human-activity variables.
+Options considered: a Fire Weather Index (FWI) baseline (kept as the
+reference), logistic regression, random forest, and the LSTM/transformer
+sequence models from the Mesogeos benchmark. Sequence models were not
+chosen first because they cost much more to train and are harder to
+explain; they remain a later comparison. Model selection shall use
+held-out results and training/inference cost, not complexity alone.
 
-AI2 — Training evidence (NFR2, NFR8–9): Record whether sample counts
-refer to raw or cleaned data, dataset size in MB/GB, number of usable
-features, class distribution and exact split percentages. The proposed
-Mesogeos Track A dataset has 25,722 published samples; this is a source
-figure, not a verified post-cleaning count. Training statistics must be
-filled from actual experiments; no training run or score is claimed in
-this SRS.
+**AI2 — Data (NFR2).** Training data is Mesogeos Track A: 25,722
+published samples (8,574 positive, 17,148 negative), each a 30-day
+window for one 1 km cell, labelled on the following day. Published
+temporal split: train 2006–2019 (19,353; 75.2%), validation 2020
+(2,262; 8.8%), test 2021–2022 (4,107; 16.0%). These are source counts
+*before* our cleaning; post-cleaning counts, file size (MB) and number
+of usable features (9 core features plus the optional Mesogeos
+variables present) shall
+be recorded after the first real-data run. Outcome columns
+(e.g. burned area) shall be removed to prevent leakage. Live inputs
+(NASA FIRMS, Open-Meteo/CAMS, GDELT) are retrieved automatically on a
+schedule (FR3).
 
-AI3 — Explainability and uncertainty (FR4–5): Model explanations shall
+**AI3 — Acceptance criteria: when is the model good enough (FR2).**
+A model version may be used only if, on the held-out test years:
+(a) recall ≥ 0.80 at the chosen threshold; (b) AUPRC is higher than the
+FWI baseline; (c) AUROC is in a plausible range compared with published
+Greek results (about 0.82–0.87 for XGBoost); and (d) AUROC ≤ 0.92, since
+higher values trigger a leakage check before acceptance.
+
+**AI4 — Performance reporting (NFR8).** Each training run shall report
+the metrics in NFR8 plus training time, number of boosting rounds
+(early stopping) and inference latency per 1,000 cell-days. Current
+status: the pipeline has only been run on synthetic test data, so no
+real performance is claimed yet; real results will be added after the
+Mesogeos data is loaded.
+
+**AI5 — Explainability and uncertainty (FR4–5).** Explanations shall
 reflect available inputs, never present a predicted fire as a confirmed
-event, and disclose absent or outdated evidence. The final
-municipality-level risk fusion must be evaluated separately from the
-cell-level predictor.
+event, and disclose absent or outdated evidence. The municipality-level
+risk fusion shall be evaluated separately from the cell-level model.
+Probabilities shall be calibrated on validation data before being
+turned into risk levels.
 
-AI4 — Recommendations (FR6): Alternatives shall be compared for
-identical travel dates and adequate source coverage. A lower predicted
+**AI6 — Recommendations (FR6).** Alternatives shall be compared for
+identical travel dates and adequate data coverage. A lower predicted
 score shall not be described as proof of safety.
+
+**AI7 — Model updates.** The model shall be retrained at least once a
+year before the fire season (May) with the latest completed season
+added. A new version replaces the current one only if it meets AI3 and
+is not worse on the latest test year. Every version is stored with its
+data snapshot and training record (NFR4). Input distributions shall be
+checked monthly during the season for drift.
+
+**AI8 — Feedback.** Users shall be able to report an assessment they
+believe is wrong (no account needed, NFR7). Reports are logged with the
+model version and reviewed by the team, and used in evaluation and
+the next retraining, not for automatic online learning.
