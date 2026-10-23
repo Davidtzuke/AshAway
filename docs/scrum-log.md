@@ -7,6 +7,8 @@
 
 **Update this log only after the meetings have actually taken place.**
 
+> Status: no formal check-ins were held in Sprint 1 and Sprint 2; tasks were coordinated through the Trello board. Check-ins start from Sprint 3.
+
 Check-in template:
 
 ```
