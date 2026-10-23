@@ -1,0 +1,74 @@
+{
+  "data": "synthetic",
+  "note": "SYNTHETIC DATA: these numbers test the pipeline only. They are NOT model results.",
+  "features": [
+    "t2m_max",
+    "rh_min",
+    "wind_speed",
+    "tp",
+    "ndvi",
+    "lai",
+    "fwi",
+    "roads_distance",
+    "population"
+  ],
+  "params": {
+    "n_estimators": 600,
+    "learning_rate": 0.05,
+    "max_depth": 4,
+    "min_child_weight": 5,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "reg_lambda": 1.0,
+    "early_stopping_rounds": 50,
+    "eval_metric": "aucpr",
+    "tree_method": "hist",
+    "random_state": 42,
+    "best_iteration": 107
+  },
+  "splits": {
+    "train": "2006-2019",
+    "val": "2020",
+    "test": "2021-2022"
+  },
+  "fwi_baseline": {
+    "val": {
+      "n": 1515,
+      "positive_rate": 0.030363036303630363,
+      "pr_auc": 0.09660213648276961,
+      "auroc": 0.7053304525409181,
+      "threshold": 0.8261148514851485,
+      "f2": 0.25669642857142855,
+      "brier": null
+    },
+    "test": {
+      "n": 2947,
+      "positive_rate": 0.032575500508992196,
+      "pr_auc": 0.14975365265421903,
+      "auroc": 0.7317059803577692,
+      "threshold": 0.8261148514851485,
+      "f2": 0.2564102564102564,
+      "brier": null
+    }
+  },
+  "xgboost": {
+    "val": {
+      "n": 1515,
+      "positive_rate": 0.030363036303630363,
+      "pr_auc": 0.297062866198257,
+      "auroc": 0.8349513126350372,
+      "threshold": 0.8073121714591981,
+      "f2": 0.3469387755102041,
+      "brier": 0.13985082154194137
+    },
+    "test": {
+      "n": 2947,
+      "positive_rate": 0.032575500508992196,
+      "pr_auc": 0.24323373438356657,
+      "auroc": 0.8608090728399392,
+      "threshold": 0.8073121714591981,
+      "f2": 0.31189083820662766,
+      "brier": 0.13775399414353912
+    }
+  }
+}
