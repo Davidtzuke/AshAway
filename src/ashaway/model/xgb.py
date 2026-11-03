@@ -6,7 +6,14 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import average_precision_score, brier_score_loss, fbeta_score, roc_auc_score
+from sklearn.metrics import (
+    average_precision_score,
+    brier_score_loss,
+    fbeta_score,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+)
 from xgboost import XGBClassifier
 
 from .data import LABEL, fire_danger_proxy, percentile_of
@@ -60,13 +67,19 @@ def choose_threshold_f2(y: np.ndarray, p: np.ndarray) -> float:
 
 def _metrics(y: np.ndarray, p: np.ndarray, threshold: float, probabilistic: bool) -> dict:
     y = np.asarray(y).astype(int)
+    if len(np.unique(y)) < 2:  # e.g. a small regional subset; ranking metrics are undefined
+        empty = dict.fromkeys(("pr_auc", "auroc", "recall", "precision", "f2", "brier"))
+        return {"n": int(len(y)), "positive_rate": float(y.mean()) if len(y) else None, "threshold": float(threshold), **empty}
+    alerts = (p >= threshold).astype(int)
     out = {
         "n": int(len(y)),
         "positive_rate": float(y.mean()),
         "pr_auc": float(average_precision_score(y, p)),
         "auroc": float(roc_auc_score(y, p)),
         "threshold": float(threshold),
-        "f2": float(fbeta_score(y, (p >= threshold).astype(int), beta=2, zero_division=0)),
+        "recall": float(recall_score(y, alerts, zero_division=0)),
+        "precision": float(precision_score(y, alerts, zero_division=0)),
+        "f2": float(fbeta_score(y, alerts, beta=2, zero_division=0)),
         # Brier only makes sense for calibrated-ish probabilities, not raw FWI ranks.
         "brier": float(brier_score_loss(y, p)) if probabilistic else None,
     }
@@ -93,9 +106,9 @@ def fwi_baseline_scores(df: pd.DataFrame, reference: pd.DataFrame | None = None)
     return fire_danger_proxy(df, ref)
 
 
-def evaluate_scores(y: np.ndarray, scores: np.ndarray, threshold: float) -> dict:
-    """Metrics for a non-probabilistic score such as the FWI baseline (no Brier)."""
-    return _metrics(y, scores, threshold, probabilistic=False)
+def evaluate_scores(y: np.ndarray, scores: np.ndarray, threshold: float, probabilistic: bool = False) -> dict:
+    """Metrics for given scores. Non-probabilistic ones such as the baseline get no Brier."""
+    return _metrics(y, scores, threshold, probabilistic=probabilistic)
 
 
 def save_model(model: XGBClassifier, path: str | Path = DEFAULT_MODEL_PATH) -> Path:

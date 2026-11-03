@@ -16,3 +16,5 @@ At the end of the project, compare `SRS.md` with the original to trace all diffe
 | 2026-10-23 | 1.2 | NFR10 → FR9 | Scope limitation message moved to functional requirements (it is system behaviour, not a quality constraint) | Lecturer feedback Task 3 (Sec. 3.2) | Sprint 2 |
 | 2026-10-23 | 1.2 | NFR1–NFR9 | Success metric column added; "Related function" renamed to "Related functional requirement"; NFR8 adds number of boosting rounds | Lecturer feedback Task 3 (Sec. 3.2) | Sprint 2 |
 | 2026-10-23 | 1.2 | AI1–AI8 | Added alternatives considered (AI1), data details with split percentages and pre/post-cleaning note (AI2), acceptance criteria (AI3), performance reporting (AI4), model updates (AI7) and user feedback (AI8) | Lecturer feedback Task 2 and Task 3 (Sec. 4) | Sprint 2 |
+| 2026-11-03 | 1.3 | AI2 | Real post-cleaning counts, file size and feature count; row 29 identified as the labelled day; explains 25,916 vs 25,722 samples | First real-data run | Task 5 |
+| 2026-11-03 | 1.3 | AI4 | Points to real results; baseline stated to be a proxy because Track A has no FWI column | First real-data run | Task 5 |
