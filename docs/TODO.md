@@ -13,7 +13,7 @@ Repo copy of the Trello tasks, so each commit can point at a task id.
 | T7 | Open-Meteo weather and air quality feeds, NASA FIRMS adapter, failures marked unavailable | FR3, NFR3, NFR5 | Must | Done |
 | T8 | Assessment service with lower-risk alternatives and destination comparison | FR2, FR6, FR7 | Must | Done |
 | T9 | Command-line interface for travellers | UR1, NFR7 | Must | Done |
-| T10 | Mark tests as unit or integration, run them in GitHub Actions, write the test catalog | Task 5 | Must | ToDo |
+| T10 | Mark tests as unit or integration, run them in GitHub Actions, write the test catalog | Task 5 | Must | Done |
 | T11 | One-page test report and class demonstration | Task 5 | Must | ToDo |
 | T12 | Get a FIRMS key and check that adapter against the live service | FR3 | Should | ToDo |
 | T13 | GDELT disruption feed | FR3 | Should | ToDo |
