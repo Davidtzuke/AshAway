@@ -9,3 +9,4 @@ models/*.json
 .pytest_cache/
 logs/
 *.egg-info/
+.coverage

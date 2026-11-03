@@ -6,7 +6,7 @@ pytest -m unit         # one function at a time, no files or network
 pytest -m integration  # several components working together
 ```
 
-GitHub Actions runs both on every push and pull request (`.github/workflows/tests.yml`) and keeps the JUnit results. The tests need no network and no large download. Each test's name starts with the case id below, for example `test_U1_rejects_with_the_correct_reason`.
+GitHub Actions runs both on every push and pull request (`.github/workflows/tests.yml`) and keeps the JUnit results. The tests need no network and no large download. Tests for a case below carry its id in their name, for example `test_U1_rejects_with_the_correct_reason`. Other tests cover smaller helpers.
 
 ## Test data
 
