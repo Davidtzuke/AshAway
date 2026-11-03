@@ -11,7 +11,7 @@ Repo copy of the Trello tasks, so each commit can point at a task id.
 | T5 | Turn calibrated scores into risk levels with an explanation | FR2, FR4, NFR6 | Must | Done |
 | T6 | Evidence items with type labels, and stale or missing input detection | FR5, FR8, NFR4 | Must | Done |
 | T7 | Open-Meteo weather and air quality feeds, NASA FIRMS adapter, failures marked unavailable | FR3, NFR3, NFR5 | Must | Done |
-| T8 | Assessment service with lower-risk alternatives and destination comparison | FR2, FR6, FR7 | Must | ToDo |
+| T8 | Assessment service with lower-risk alternatives and destination comparison | FR2, FR6, FR7 | Must | Done |
 | T9 | Command-line interface for travellers | UR1, NFR7 | Must | ToDo |
 | T10 | Mark tests as unit or integration, run them in GitHub Actions, write the test catalog | Task 5 | Must | ToDo |
 | T11 | One-page test report and class demonstration | Task 5 | Must | ToDo |
