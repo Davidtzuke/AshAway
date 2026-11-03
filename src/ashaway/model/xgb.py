@@ -9,7 +9,7 @@ import pandas as pd
 from sklearn.metrics import average_precision_score, brier_score_loss, fbeta_score, roc_auc_score
 from xgboost import XGBClassifier
 
-from .data import LABEL
+from .data import LABEL, fire_danger_proxy, percentile_of
 
 log = logging.getLogger(__name__)
 
@@ -82,9 +82,15 @@ def evaluate(model: XGBClassifier, df: pd.DataFrame, features: list[str], thresh
     return _metrics(df[LABEL].to_numpy(), p, threshold, probabilistic=True)
 
 
-def fwi_baseline_scores(df: pd.DataFrame) -> np.ndarray:
-    """FWI-only baseline: the fire weather index is the score, rescaled to [0, 1] by percentile."""
-    return df["fwi"].rank(pct=True).to_numpy()
+def fwi_baseline_scores(df: pd.DataFrame, reference: pd.DataFrame | None = None) -> np.ndarray:
+    """Baseline score in [0, 1]: FWI percentile, or the hot/dry/windy proxy on data without FWI.
+
+    Percentiles come from `reference` (the training split) when it is given.
+    """
+    ref = df if reference is None else reference
+    if "fwi" in df.columns:
+        return percentile_of(df["fwi"], ref["fwi"])
+    return fire_danger_proxy(df, ref)
 
 
 def evaluate_scores(y: np.ndarray, scores: np.ndarray, threshold: float) -> dict:
