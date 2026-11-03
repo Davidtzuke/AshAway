@@ -33,7 +33,7 @@ def run(synthetic: bool, data_dir: Path, report_path: Path, model_path: Path, n:
     p_val = model.predict_proba(val[features])[:, 1]
     thr = choose_threshold_f2(val[LABEL].to_numpy(), p_val)
 
-    base_val = fwi_baseline_scores(val)
+    base_val = fwi_baseline_scores(val, train)
     base_thr = choose_threshold_f2(val[LABEL].to_numpy(), base_val)
 
     results = {
@@ -44,7 +44,7 @@ def run(synthetic: bool, data_dir: Path, report_path: Path, model_path: Path, n:
         "splits": {"train": "2006-2019", "val": "2020", "test": "2021-2022"},
         "fwi_baseline": {
             "val": evaluate_scores(val[LABEL].to_numpy(), base_val, base_thr),
-            "test": evaluate_scores(test[LABEL].to_numpy(), fwi_baseline_scores(test), base_thr),
+            "test": evaluate_scores(test[LABEL].to_numpy(), fwi_baseline_scores(test, train), base_thr),
         },
         "xgboost": {
             "val": evaluate(model, val, features, thr),
