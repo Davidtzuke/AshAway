@@ -77,3 +77,13 @@ To check the suite can fail, we broke the code on purpose in 8 ways and ran it e
 - **Live forecast weather.** Recorded responses are reanalysis from the archive service.
 - **Model skill.** Tests check that the pipeline behaves correctly. Skill is measured in `docs/model-results.md`, and one acceptance criterion isn't met there.
 - **User acceptance targets**, such as the percentage of test users completing a request. These need real users.
+
+## Class demonstration
+
+Run from the repository root, with the virtual environment active (Windows: `.venv\Scripts\activate`).
+
+1. `pytest -m unit -v`, then `pytest -m integration -v`, to show all tests running by themselves. Point at one `U` and one `I` name, and open that test to show its input and expected output.
+2. `ashaway assess rhodes 2023-07-18 2023-07-24`, for a real answer on the July 2023 Rhodes fires. It reads live Open-Meteo data, so it needs internet.
+3. `ashaway assess atlantis 2023-07-18 2023-07-24`, to show a request being refused with its reason.
+4. In `src/ashaway/risk.py`, change `probability >= high_from` to `probability > high_from` and run `pytest -m unit -q`. Test U2 fails, which shows the tests catch real bugs. Undo the change afterwards.
+5. Open the Actions tab on GitHub to show the same tests running on each push.
