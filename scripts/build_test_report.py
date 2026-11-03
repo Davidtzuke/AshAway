@@ -61,7 +61,7 @@ def table(rows, first_col):
     header = ["ID", first_col, "Test input", "Expected output (all matched)", "Why this test", "Passed"]
     data = [[Paragraph(f"<b>{h}</b>", cell) for h in header]]
     data += [[Paragraph(str(v), cell) for v in row] for row in rows]
-    t = Table(data, colWidths=[0.65 * cm, 2.75 * cm, 4.5 * cm, 5.0 * cm, 4.45 * cm, 1.05 * cm], repeatRows=1)
+    t = Table(data, colWidths=[0.65 * cm, 3.45 * cm, 4.1 * cm, 4.7 * cm, 4.2 * cm, 1.3 * cm], repeatRows=1)
     t.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, 0), HEAD),
         ("LINEBELOW", (0, 0), (-1, -1), 0.3, RULE),
