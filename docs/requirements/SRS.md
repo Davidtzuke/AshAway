@@ -1,5 +1,5 @@
 AshAway | Software Engineering for CSAI | Group 9
-Version 1.2 (revised after Task 2/3 feedback; original v1.1 kept as `SRS_v1.1_original.docx`)
+Version 1.3 (revised after Task 2/3 feedback and the first real-data run; original v1.1 kept as `SRS_v1.1_original.docx`)
 
 # 1. Introduction
 
@@ -90,15 +90,15 @@ explain; they remain a later comparison. Model selection shall use
 held-out results and training/inference cost, not complexity alone.
 
 **AI2 — Data (NFR2).** Training data is Mesogeos Track A: 25,722
-published samples (8,574 positive, 17,148 negative), each a 30-day
-window for one 1 km cell, labelled on the following day. Published
-temporal split: train 2006–2019 (19,353; 75.2%), validation 2020
-(2,262; 8.8%), test 2021–2022 (4,107; 16.0%). These are source counts
-*before* our cleaning; post-cleaning counts, file size (MB) and number
-of usable features (9 core features plus the optional Mesogeos
-variables present) shall
-be recorded after the first real-data run. Outcome columns
-(e.g. burned area) shall be removed to prevent leakage. Live inputs
+samples after cleaning (8,574 positive, 17,148 negative), from 25,916
+in the files; 194 surplus negatives are removed to keep 2 negatives per
+positive in each split, as the official loader does. Each sample is a
+30-day window for one 1 km cell. Row 29 is the labelled day, so inputs
+come only from rows 0-28. Temporal split: train 2006–2019 (19,353;
+75.2%), validation 2020 (2,262; 8.8%), test 2021–2022 (4,107; 16.0%).
+The files are 217.8 MB, with 28 usable features. Rows, removals and
+missing rates are in `reports/training_record.json`. Outcome columns
+(e.g. burned area) are removed to prevent leakage. Live inputs
 (NASA FIRMS, Open-Meteo/CAMS, GDELT) are retrieved automatically on a
 schedule (FR3).
 
@@ -112,9 +112,8 @@ higher values trigger a leakage check before acceptance.
 **AI4 — Performance reporting (NFR8).** Each training run shall report
 the metrics in NFR8 plus training time, number of boosting rounds
 (early stopping) and inference latency per 1,000 cell-days. Current
-status: the pipeline has only been run on synthetic test data, so no
-real performance is claimed yet; real results will be added after the
-Mesogeos data is loaded.
+results are in `docs/model-results.md`. Track A has no Fire Weather
+Index column, so the baseline is a hot/dry/windy percentile proxy.
 
 **AI5 — Explainability and uncertainty (FR4–5).** Explanations shall
 reflect available inputs, never present a predicted fire as a confirmed

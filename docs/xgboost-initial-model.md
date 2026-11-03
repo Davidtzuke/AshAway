@@ -1,5 +1,7 @@
 # Initial XGBoost fire-danger model
 
+> **Superseded.** This describes the first version, which ran on synthetic data only. Real results and the corrected loader are in [model-results.md](model-results.md). The statement below that the label applies to the day after the last row is wrong: row 29 is the labelled day.
+
 Trello card: "Implement initial XGBoost model, if data supports it".
 Code: `src/ashaway/model/` (data, xgb, train). Tests: `tests/test_model.py`.
 

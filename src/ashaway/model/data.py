@@ -40,8 +40,14 @@ EXTRA_REAL_FEATURES = [
 ]
 # Aggregates over the 7 days up to the issue day (built from rows <= ISSUE_TIME_IDX).
 WINDOW_FEATURES = ["rain_7d", "days_since_rain", "t2m_max_7d", "rh_min_7d"]
-# Weather inputs a live feed can supply; the deployable model is limited to these.
-LIVE_FEATURES = ["t2m_max", "rh_min", "wind_speed", "tp"] + WINDOW_FEATURES
+# Fixed per location, so the product can store them per destination.
+STATIC_FEATURES = [
+    "dem", "slope", "roads_distance", "population",
+    "lc_agriculture", "lc_forest", "lc_grassland", "lc_settlement",
+    "lc_shrubland", "lc_sparse_vegetation", "lc_water_bodies", "lc_wetland",
+]
+# What the product can supply for a future day: live weather plus stored static values.
+LIVE_FEATURES = ["t2m_max", "rh_min", "wind_speed", "tp"] + WINDOW_FEATURES + STATIC_FEATURES
 # Mesogeos column name -> our column name.
 MESOGEOS_RENAME = {"t2m": "t2m_max", "rh": "rh_min"}
 

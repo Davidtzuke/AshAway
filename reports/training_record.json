@@ -1,0 +1,554 @@
+{
+  "data": "mesogeos_track_a",
+  "note": "Real Mesogeos Track A data. The 1:2 class ratio is by construction, so precision and calibrated probabilities are higher than at the real rate of fire days.",
+  "data_report": {
+    "raw_rows": 777480,
+    "raw_samples": 25916,
+    "removed_duplicate_rows": 0,
+    "removed_incomplete_samples": 0,
+    "removed_surplus_negatives": 194,
+    "clean_samples": 25722,
+    "positives": 8574,
+    "negatives": 17148,
+    "feature_count": 28,
+    "missing_rate": {
+      "ndvi": 0.0021,
+      "lai": 0.0167,
+      "population": 0.0001,
+      "lst_day": 0.2857,
+      "lst_night": 0.3294,
+      "smi": 0.1222
+    },
+    "file_size_mb": 217.8
+  },
+  "splits": {
+    "train_2006_2019": {
+      "n": 19353,
+      "percent": 75.2,
+      "positives": 6451
+    },
+    "val_2020": {
+      "n": 2262,
+      "percent": 8.8,
+      "positives": 754
+    },
+    "test_2021_2022": {
+      "n": 4107,
+      "percent": 16.0,
+      "positives": 1369
+    }
+  },
+  "subset_sizes": {
+    "val": 2262,
+    "test": 4107,
+    "test_may_oct": 3071,
+    "test_greece": 275,
+    "test_greece_may_oct": 201
+  },
+  "xgboost_params": {
+    "n_estimators": 600,
+    "learning_rate": 0.05,
+    "max_depth": 4,
+    "min_child_weight": 5,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "reg_lambda": 1.0,
+    "early_stopping_rounds": 50,
+    "eval_metric": "aucpr",
+    "tree_method": "hist",
+    "random_state": 42
+  },
+  "models": {
+    "baseline_fwi_proxy": {
+      "features": [
+        "t2m_max",
+        "rh_min",
+        "wind_speed",
+        "tp"
+      ],
+      "threshold": 0.30318183227406603,
+      "metrics": {
+        "val": {
+          "n": 2262,
+          "positive_rate": 0.3333333333333333,
+          "pr_auc": 0.593079154908269,
+          "auroc": 0.7561779263908139,
+          "threshold": 0.30318183227406603,
+          "recall": 0.9655172413793104,
+          "precision": 0.4064768285873814,
+          "f2": 0.7572290409819014,
+          "brier": null
+        },
+        "test": {
+          "n": 4107,
+          "positive_rate": 0.3333333333333333,
+          "pr_auc": 0.5051329413231775,
+          "auroc": 0.7227104555051567,
+          "threshold": 0.30318183227406603,
+          "recall": 0.960555149744339,
+          "precision": 0.38870824711794266,
+          "f2": 0.7421830906422847,
+          "brier": null
+        },
+        "test_may_oct": {
+          "n": 3071,
+          "positive_rate": 0.38977531748616084,
+          "pr_auc": 0.5296308285523199,
+          "auroc": 0.6971252392810556,
+          "threshold": 0.30318183227406603,
+          "recall": 0.9866332497911445,
+          "precision": 0.42420977011494254,
+          "f2": 0.7798468040147913,
+          "brier": null
+        },
+        "test_greece": {
+          "n": 275,
+          "positive_rate": 0.18545454545454546,
+          "pr_auc": 0.6656231717268649,
+          "auroc": 0.8779761904761905,
+          "threshold": 0.30318183227406603,
+          "recall": 0.9411764705882353,
+          "precision": 0.2696629213483146,
+          "f2": 0.6282722513089005,
+          "brier": null
+        },
+        "test_greece_may_oct": {
+          "n": 201,
+          "positive_rate": 0.23383084577114427,
+          "pr_auc": 0.697880539814982,
+          "auroc": 0.883255042829511,
+          "threshold": 0.30318183227406603,
+          "recall": 0.9787234042553191,
+          "precision": 0.3087248322147651,
+          "f2": 0.6824925816023739,
+          "brier": null
+        }
+      }
+    },
+    "logistic_regression": {
+      "features": [
+        "t2m_max",
+        "rh_min",
+        "wind_speed",
+        "tp",
+        "ndvi",
+        "lai",
+        "roads_distance",
+        "population",
+        "d2m",
+        "lst_day",
+        "lst_night",
+        "smi",
+        "sp",
+        "ssrd",
+        "dem",
+        "slope",
+        "lc_agriculture",
+        "lc_forest",
+        "lc_grassland",
+        "lc_settlement",
+        "lc_shrubland",
+        "lc_sparse_vegetation",
+        "lc_water_bodies",
+        "lc_wetland",
+        "rain_7d",
+        "days_since_rain",
+        "t2m_max_7d",
+        "rh_min_7d"
+      ],
+      "threshold": 0.3884843940190156,
+      "train_seconds": 0.13,
+      "latency_ms_per_1000": 2.79,
+      "metrics": {
+        "val": {
+          "n": 2262,
+          "positive_rate": 0.3333333333333333,
+          "pr_auc": 0.7496282769766667,
+          "auroc": 0.8558123254226794,
+          "threshold": 0.3884843940190156,
+          "recall": 0.8806366047745358,
+          "precision": 0.5579831932773109,
+          "f2": 0.7893485496909177,
+          "brier": 0.1588394697606375
+        },
+        "test": {
+          "n": 4107,
+          "positive_rate": 0.3333333333333333,
+          "pr_auc": 0.7060435227426637,
+          "auroc": 0.8214390332527461,
+          "threshold": 0.3884843940190156,
+          "recall": 0.8363769174579986,
+          "precision": 0.5107047279214987,
+          "f2": 0.741772479917077,
+          "brier": 0.18060932639847208
+        },
+        "test_may_oct": {
+          "n": 3071,
+          "positive_rate": 0.38977531748616084,
+          "pr_auc": 0.7373804499448108,
+          "auroc": 0.8302060737043605,
+          "threshold": 0.3884843940190156,
+          "recall": 0.9365079365079365,
+          "precision": 0.5121059844677935,
+          "f2": 0.8033538770245091,
+          "brier": 0.1980978746022753
+        },
+        "test_greece": {
+          "n": 275,
+          "positive_rate": 0.18545454545454546,
+          "pr_auc": 0.47803429970122474,
+          "auroc": 0.8413865546218487,
+          "threshold": 0.3884843940190156,
+          "recall": 0.9215686274509803,
+          "precision": 0.3533834586466165,
+          "f2": 0.6973293768545994,
+          "brier": 0.18196063477124888
+        },
+        "test_greece_may_oct": {
+          "n": 201,
+          "positive_rate": 0.23383084577114427,
+          "pr_auc": 0.48892596487700984,
+          "auroc": 0.8092014368610113,
+          "threshold": 0.3884843940190156,
+          "recall": 0.9574468085106383,
+          "precision": 0.3488372093023256,
+          "f2": 0.7097791798107256,
+          "brier": 0.23202925104467131
+        }
+      }
+    },
+    "random_forest": {
+      "features": [
+        "t2m_max",
+        "rh_min",
+        "wind_speed",
+        "tp",
+        "ndvi",
+        "lai",
+        "roads_distance",
+        "population",
+        "d2m",
+        "lst_day",
+        "lst_night",
+        "smi",
+        "sp",
+        "ssrd",
+        "dem",
+        "slope",
+        "lc_agriculture",
+        "lc_forest",
+        "lc_grassland",
+        "lc_settlement",
+        "lc_shrubland",
+        "lc_sparse_vegetation",
+        "lc_water_bodies",
+        "lc_wetland",
+        "rain_7d",
+        "days_since_rain",
+        "t2m_max_7d",
+        "rh_min_7d"
+      ],
+      "threshold": 0.28069891260455243,
+      "train_seconds": 3.82,
+      "latency_ms_per_1000": 83.36,
+      "metrics": {
+        "val": {
+          "n": 2262,
+          "positive_rate": 0.3333333333333333,
+          "pr_auc": 0.8305280934658705,
+          "auroc": 0.8997486438376404,
+          "threshold": 0.28069891260455243,
+          "recall": 0.9270557029177718,
+          "precision": 0.5743631881676253,
+          "f2": 0.8256555634301913,
+          "brier": 0.12364921275418062
+        },
+        "test": {
+          "n": 4107,
+          "positive_rate": 0.3333333333333333,
+          "pr_auc": 0.8012988714145868,
+          "auroc": 0.887911177321479,
+          "threshold": 0.28069891260455243,
+          "recall": 0.9364499634769905,
+          "precision": 0.5490364025695932,
+          "f2": 0.820637562411983,
+          "brier": 0.13294176354565868
+        },
+        "test_may_oct": {
+          "n": 3071,
+          "positive_rate": 0.38977531748616084,
+          "pr_auc": 0.8222992511568676,
+          "auroc": 0.8780783335071938,
+          "threshold": 0.28069891260455243,
+          "recall": 0.9640768588137009,
+          "precision": 0.5369939506747324,
+          "f2": 0.8317716592186825,
+          "brier": 0.15121918989303218
+        },
+        "test_greece": {
+          "n": 275,
+          "positive_rate": 0.18545454545454546,
+          "pr_auc": 0.5380465078001601,
+          "auroc": 0.8705357142857142,
+          "threshold": 0.28069891260455243,
+          "recall": 0.9215686274509803,
+          "precision": 0.34558823529411764,
+          "f2": 0.6911764705882353,
+          "brier": 0.14525492657286646
+        },
+        "test_greece_may_oct": {
+          "n": 201,
+          "positive_rate": 0.23383084577114427,
+          "pr_auc": 0.5567079175707059,
+          "auroc": 0.8623929262227135,
+          "threshold": 0.28069891260455243,
+          "recall": 0.9787234042553191,
+          "precision": 0.3511450381679389,
+          "f2": 0.7210031347962382,
+          "brier": 0.1812637401786298
+        }
+      }
+    },
+    "xgboost_all_features": {
+      "features": [
+        "t2m_max",
+        "rh_min",
+        "wind_speed",
+        "tp",
+        "ndvi",
+        "lai",
+        "roads_distance",
+        "population",
+        "d2m",
+        "lst_day",
+        "lst_night",
+        "smi",
+        "sp",
+        "ssrd",
+        "dem",
+        "slope",
+        "lc_agriculture",
+        "lc_forest",
+        "lc_grassland",
+        "lc_settlement",
+        "lc_shrubland",
+        "lc_sparse_vegetation",
+        "lc_water_bodies",
+        "lc_wetland",
+        "rain_7d",
+        "days_since_rain",
+        "t2m_max_7d",
+        "rh_min_7d"
+      ],
+      "threshold": 0.2770534852147103,
+      "train_seconds": 1.53,
+      "latency_ms_per_1000": 4.98,
+      "metrics": {
+        "val": {
+          "n": 2262,
+          "positive_rate": 0.3333333333333333,
+          "pr_auc": 0.8588398305169297,
+          "auroc": 0.9188897058306187,
+          "threshold": 0.2770534852147103,
+          "recall": 0.9244031830238727,
+          "precision": 0.6290613718411552,
+          "f2": 0.8450533462657615,
+          "brier": 0.11350437253713608
+        },
+        "test": {
+          "n": 4107,
+          "positive_rate": 0.3333333333333333,
+          "pr_auc": 0.83758820689683,
+          "auroc": 0.9063442254961019,
+          "threshold": 0.2770534852147103,
+          "recall": 0.9218407596785975,
+          "precision": 0.5924882629107981,
+          "f2": 0.8296082040494347,
+          "brier": 0.12348169088363647
+        },
+        "test_may_oct": {
+          "n": 3071,
+          "positive_rate": 0.38977531748616084,
+          "pr_auc": 0.8517122685270484,
+          "auroc": 0.8935510244840132,
+          "threshold": 0.2770534852147103,
+          "recall": 0.9431913116123642,
+          "precision": 0.5816589386913962,
+          "f2": 0.8389062267796107,
+          "brier": 0.1434166580438614
+        },
+        "test_greece": {
+          "n": 275,
+          "positive_rate": 0.18545454545454546,
+          "pr_auc": 0.6346570454569259,
+          "auroc": 0.8819152661064426,
+          "threshold": 0.2770534852147103,
+          "recall": 0.8823529411764706,
+          "precision": 0.38461538461538464,
+          "f2": 0.7009345794392523,
+          "brier": 0.14416052401065826
+        },
+        "test_greece_may_oct": {
+          "n": 201,
+          "positive_rate": 0.23383084577114427,
+          "pr_auc": 0.657996948089487,
+          "auroc": 0.8720641061066592,
+          "threshold": 0.2770534852147103,
+          "recall": 0.9361702127659575,
+          "precision": 0.38596491228070173,
+          "f2": 0.7284768211920529,
+          "brier": 0.1821180284023285
+        }
+      },
+      "boosting_rounds": 573
+    },
+    "xgboost_live": {
+      "features": [
+        "t2m_max",
+        "rh_min",
+        "wind_speed",
+        "tp",
+        "rain_7d",
+        "days_since_rain",
+        "t2m_max_7d",
+        "rh_min_7d",
+        "dem",
+        "slope",
+        "roads_distance",
+        "population",
+        "lc_agriculture",
+        "lc_forest",
+        "lc_grassland",
+        "lc_settlement",
+        "lc_shrubland",
+        "lc_sparse_vegetation",
+        "lc_water_bodies",
+        "lc_wetland"
+      ],
+      "threshold": 0.18968279361724857,
+      "train_seconds": 0.94,
+      "latency_ms_per_1000": 3.76,
+      "metrics": {
+        "val": {
+          "n": 2262,
+          "positive_rate": 0.3333333333333333,
+          "pr_auc": 0.8229302504868807,
+          "auroc": 0.8950460497153994,
+          "threshold": 0.18968279361724857,
+          "recall": 0.946949602122016,
+          "precision": 0.5332337565347274,
+          "f2": 0.8197474167623421,
+          "brier": 0.1309913992881775
+        },
+        "test": {
+          "n": 4107,
+          "positive_rate": 0.3333333333333333,
+          "pr_auc": 0.8060362880026511,
+          "auroc": 0.8879442587910004,
+          "threshold": 0.18968279361724857,
+          "recall": 0.9488677867056245,
+          "precision": 0.5169120573020295,
+          "f2": 0.8129928651896358,
+          "brier": 0.1369982361793518
+        },
+        "test_may_oct": {
+          "n": 3071,
+          "positive_rate": 0.38977531748616084,
+          "pr_auc": 0.8221152138266572,
+          "auroc": 0.8727880712096855,
+          "threshold": 0.18968279361724857,
+          "recall": 0.9699248120300752,
+          "precision": 0.511679153812252,
+          "f2": 0.8225875017712909,
+          "brier": 0.15896011888980865
+        },
+        "test_greece": {
+          "n": 275,
+          "positive_rate": 0.18545454545454546,
+          "pr_auc": 0.5742611485800121,
+          "auroc": 0.86046918767507,
+          "threshold": 0.18968279361724857,
+          "recall": 0.9019607843137255,
+          "precision": 0.323943661971831,
+          "f2": 0.6647398843930635,
+          "brier": 0.15568211674690247
+        },
+        "test_greece_may_oct": {
+          "n": 201,
+          "positive_rate": 0.23383084577114427,
+          "pr_auc": 0.5950930702046067,
+          "auroc": 0.8400110527770103,
+          "threshold": 0.18968279361724857,
+          "recall": 0.9361702127659575,
+          "precision": 0.3333333333333333,
+          "f2": 0.6875,
+          "brier": 0.19583167135715485
+        }
+      },
+      "boosting_rounds": 570
+    }
+  },
+  "live_bundle": {
+    "version": "live-v1",
+    "medium_from": 0.1975308656692505,
+    "high_from": 0.46666666865348816,
+    "high_risk_precision_target": 0.75,
+    "calibrated_metrics": {
+      "val": {
+        "n": 2262,
+        "positive_rate": 0.3333333333333333,
+        "pr_auc": 0.8161004279358515,
+        "auroc": 0.8982979370853238,
+        "threshold": 0.1975308656692505,
+        "recall": 0.9456233421750663,
+        "precision": 0.5352852852852853,
+        "f2": 0.8199172033118676,
+        "brier": 0.11878853944128877
+      },
+      "test": {
+        "n": 4107,
+        "positive_rate": 0.3333333333333333,
+        "pr_auc": 0.7880246279546761,
+        "auroc": 0.8860942309652159,
+        "threshold": 0.1975308656692505,
+        "recall": 0.9459459459459459,
+        "precision": 0.5204983922829582,
+        "f2": 0.8130336514314415,
+        "brier": 0.12671095616452038
+      },
+      "test_may_oct": {
+        "n": 3071,
+        "positive_rate": 0.38977531748616084,
+        "pr_auc": 0.8044060200978387,
+        "auroc": 0.8706027787362394,
+        "threshold": 0.1975308656692505,
+        "recall": 0.9674185463659147,
+        "precision": 0.5148955091151622,
+        "f2": 0.8227938041779167,
+        "brier": 0.1415575490310435
+      },
+      "test_greece": {
+        "n": 275,
+        "positive_rate": 0.18545454545454546,
+        "pr_auc": 0.5347673684990575,
+        "auroc": 0.8570990896358543,
+        "threshold": 0.1975308656692505,
+        "recall": 0.9019607843137255,
+        "precision": 0.323943661971831,
+        "f2": 0.6647398843930635,
+        "brier": 0.12362308401636433
+      },
+      "test_greece_may_oct": {
+        "n": 201,
+        "positive_rate": 0.23383084577114427,
+        "pr_auc": 0.5529453691806014,
+        "auroc": 0.8347609836971539,
+        "threshold": 0.1975308656692505,
+        "recall": 0.9361702127659575,
+        "precision": 0.3333333333333333,
+        "f2": 0.6875,
+        "brier": 0.15239954811422723
+      }
+    }
+  }
+}
