@@ -2,6 +2,7 @@ import pandas as pd
 import pytest
 
 from ashaway import geo
+from ashaway.geo import in_greece
 
 
 def test_lau_codes_group_by_first_four_chars():
@@ -48,3 +49,18 @@ def test_aggregate_cells_max_and_mean():
     assert row.prob_mean == pytest.approx(0.3)
     assert row.n_cells == 2
     assert len(out) == 3
+
+
+@pytest.mark.parametrize(
+    "lon, lat, expected",
+    [
+        (23.73, 37.98, True),  # Athens
+        (28.22, 36.43, True),  # Rhodes town, on an island
+        (19.92, 39.62, True),  # Corfu town
+        (27.14, 38.42, False),  # Izmir, Turkey, close to the Greek islands
+        (19.82, 41.33, False),  # Tirana, Albania
+        (19.00, 37.50, False),  # open Ionian Sea
+    ],
+)
+def test_in_greece_separates_greece_from_neighbours(lon, lat, expected):
+    assert bool(in_greece(lon, lat)[0]) is expected

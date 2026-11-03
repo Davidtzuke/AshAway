@@ -20,9 +20,13 @@ with pandas and numpy alone.
 
 from __future__ import annotations
 
+import json
 import math
 from dataclasses import dataclass
+from functools import lru_cache
+from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 N_MUNICIPALITIES = 332
@@ -160,6 +164,34 @@ def aggregate_cells_to_municipality(
         .reset_index()
     )
     return out
+
+
+@lru_cache(maxsize=1)
+def _greece_rings() -> tuple[np.ndarray, ...]:
+    path = Path(__file__).parent / "resources" / "greece_boundary.json"
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return tuple(np.asarray(ring, dtype=float) for ring in data["rings"])
+
+
+def points_in_ring(lon: np.ndarray, lat: np.ndarray, ring: np.ndarray) -> np.ndarray:
+    """Ray-casting point-in-polygon test for arrays of points and one closed ring."""
+    x0, y0 = ring[:-1, 0], ring[:-1, 1]
+    x1, y1 = ring[1:, 0], ring[1:, 1]
+    crosses = (y0[None, :] > lat[:, None]) != (y1[None, :] > lat[:, None])
+    with np.errstate(divide="ignore", invalid="ignore"):
+        at_x = x0 + (lat[:, None] - y0) * (x1 - x0) / (y1 - y0)
+    return ((lon[:, None] < at_x) & crosses).sum(axis=1) % 2 == 1
+
+
+def in_greece(lon, lat) -> np.ndarray:
+    """True for WGS84 points inside Greece on the GISCO 1:20M boundary (small islets may be missed)."""
+    lon, lat = np.atleast_1d(lon).astype(float), np.atleast_1d(lat).astype(float)
+    inside = np.zeros(len(lon), dtype=bool)
+    for ring in _greece_rings():
+        box = (lon >= ring[:, 0].min()) & (lon <= ring[:, 0].max()) & (lat >= ring[:, 1].min()) & (lat <= ring[:, 1].max())
+        if box.any():
+            inside[box] |= points_in_ring(lon[box], lat[box], ring)
+    return inside
 
 
 def load_municipalities_from_gisco(

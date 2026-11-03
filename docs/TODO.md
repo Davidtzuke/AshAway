@@ -5,7 +5,7 @@ Repo copy of the Trello tasks, so each commit can point at a task id.
 | ID | Task | Requirement | Priority | Status |
 |----|------|-------------|----------|--------|
 | T1 | Fix the Track A loader: no fire-day inputs, 2:1 negatives per split, data report | AI2, NFR2, NFR9 | Must | Done |
-| T2 | Filter by Greek boundary and report Greece and May-October results | AI3, AI4 | Must | ToDo |
+| T2 | Filter by Greek boundary and report Greece and May-October results | AI3, AI4 | Must | Done |
 | T3 | Compare models on real data, calibrate, write the training record | AI1, AI3, AI4, AI5, NFR8 | Must | ToDo |
 | T4 | Validate requests and reject unsupported places and dates | FR1, FR9 | Must | ToDo |
 | T5 | Turn calibrated scores into risk levels with an explanation | FR2, FR4, NFR6 | Must | ToDo |
