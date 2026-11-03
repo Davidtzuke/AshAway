@@ -7,3 +7,6 @@ data/processed/
 *.nc
 models/*.json
 .pytest_cache/
+logs/
+*.egg-info/
+.coverage

@@ -62,5 +62,5 @@ def test_aggregate_cells_max_and_mean():
         (19.00, 37.50, False),  # open Ionian Sea
     ],
 )
-def test_in_greece_separates_greece_from_neighbours(lon, lat, expected):
+def test_U8_in_greece_separates_greece_from_neighbours(lon, lat, expected):
     assert bool(in_greece(lon, lat)[0]) is expected
