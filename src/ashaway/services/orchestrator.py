@@ -145,9 +145,11 @@ def create_app(
     @app.get("/health")
     def health():
         try:
-            ai = {"status": "ok", "model_version": RemoteModel(client).version}
-        except ModelUnavailable as exc:
-            ai = {"status": "unavailable", "error": str(exc)}
+            r = client.get("/health")
+            ai = {"status": "ok", "model_version": r.json()["model_version"]} if r.status_code == 200 else \
+                {"status": "unavailable", "error": f"the AI server answered {r.status_code}"}
+        except (httpx.HTTPError, ValueError, KeyError) as exc:
+            ai = {"status": "unavailable", "error": f"the AI server could not be reached ({type(exc).__name__})"}
         return {"service": SERVICE, "status": "ok" if ai["status"] == "ok" else "degraded", "ai": ai,
                 "requests_served": app.state.requests_served}
 
