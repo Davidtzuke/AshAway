@@ -10,3 +10,4 @@ models/*.json
 logs/
 *.egg-info/
 .coverage
+data/*.sqlite3
