@@ -17,6 +17,7 @@
   select, input, button { font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 4px; }
   button { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; cursor: pointer; }
   button:disabled { opacity: .6; cursor: wait; }
+  button.secondary { background: #fff; color: var(--accent); font-weight: 500; }
   button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   @media (max-width: 620px) { form { grid-template-columns: 1fr 1fr; } form label:first-child, form button { grid-column: 1 / -1; } }
   #out { margin-top: 28px; }
@@ -85,7 +86,7 @@ function show(data) {
   const fb = el("div", null, "panel");
   fb.append(el("p", "Does this look wrong? Tell us. We review every report; it is not used to change answers automatically.", "note"));
   for (const [verdict, label] of [["risk_too_high", "Risk too high"], ["risk_too_low", "Risk too low"], ["evidence_wrong", "Evidence wrong"]]) {
-    const b = el("button", label); b.type = "button"; b.style.marginRight = "8px";
+    const b = el("button", label, "secondary"); b.type = "button"; b.style.marginRight = "8px";
     b.addEventListener("click", async () => {
       const r = await fetch(`/api/assessments/${data.id}/feedback`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ verdict }) });
       fb.replaceChildren(el("p", r.ok ? "Thank you. Your report was saved." : "Your report could not be saved.", "note"));
