@@ -82,6 +82,17 @@ function show(data) {
   list("Warnings", a.warnings, w => el("li", w, "warn"));
   list("Lower estimated risk on the same dates", a.alternatives, x => el("li", `${x.name}: ${x.level} (peak score ${x.peak_probability.toFixed(2)})`));
   out.append(el("p", a.disclaimer, "panel"));
+  const fb = el("div", null, "panel");
+  fb.append(el("p", "Does this look wrong? Tell us. We review every report; it is not used to change answers automatically.", "note"));
+  for (const [verdict, label] of [["risk_too_high", "Risk too high"], ["risk_too_low", "Risk too low"], ["evidence_wrong", "Evidence wrong"]]) {
+    const b = el("button", label); b.type = "button"; b.style.marginRight = "8px";
+    b.addEventListener("click", async () => {
+      const r = await fetch(`/api/assessments/${data.id}/feedback`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ verdict }) });
+      fb.replaceChildren(el("p", r.ok ? "Thank you. Your report was saved." : "Your report could not be saved.", "note"));
+    });
+    fb.append(b);
+  }
+  out.append(fb);
   const o = data.trace.orchestrator;
   out.append(el("p", `Assessment ${data.id} · interface → orchestrator → AI server (${o.ai_calls} model calls, ${o.duration_ms} ms) · model ${a.model_version}`, "note"));
 }

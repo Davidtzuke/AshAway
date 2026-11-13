@@ -15,7 +15,7 @@ import sys
 import uuid
 from datetime import date, datetime, timezone
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Literal
 
 import httpx
 from fastapi import FastAPI, Request
@@ -49,6 +49,13 @@ class CompareBody(BaseModel):
     places: list[str] = Field(min_length=2, max_length=11)
     start: str = Field(max_length=20)
     end: str = Field(max_length=20)
+
+
+class FeedbackBody(BaseModel):
+    """A traveller saying an assessment looks wrong (AI8). Reviewed by the team, never learned from automatically."""
+
+    verdict: Literal["risk_too_high", "risk_too_low", "evidence_wrong", "other"]
+    comment: str | None = Field(default=None, max_length=500)
 
 
 def create_app(
@@ -145,7 +152,15 @@ def create_app(
         found = store.get(assessment_id)
         if found is None:
             return JSONResponse(error_body("not_found", "No assessment with this id.", SERVICE), 404)
-        return found
+        return {**found, "feedback": store.feedback_for(assessment_id)}
+
+    @app.post("/api/assessments/{assessment_id}/feedback", status_code=201)
+    def feedback(assessment_id: str, body: FeedbackBody):
+        found = store.get(assessment_id)
+        if found is None or found["outcome"] not in ("assessed", "insufficient evidence"):
+            return JSONResponse(error_body("not_found", "Feedback can only be given on an assessment that was made.", SERVICE), 404)
+        store.add_feedback(assessment_id, body.verdict, body.comment)
+        return {"saved": True, "assessment_id": assessment_id, "model_version": found["model_version"]}
 
     return app
 

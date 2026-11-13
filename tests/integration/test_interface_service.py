@@ -73,6 +73,30 @@ def test_I9_ai_outage_reported_by_the_orchestrator_is_passed_on(tmp_path):
     assert "assessment" not in r.json()
 
 
+def test_I9_feedback_is_stored_with_the_assessment(tmp_path):
+    api = make_interface(tmp_path, orchestrator_stub([]))
+    assessment_id = api.post("/api/assess", json=RHODES).json()["id"]
+    r = api.post(f"/api/assessments/{assessment_id}/feedback", json={"verdict": "risk_too_high", "comment": "Calm all week."})
+    assert r.status_code == 201
+    assert r.json() == {"saved": True, "assessment_id": assessment_id, "model_version": "live-v1"}
+    feedback = api.get(f"/api/assessments/{assessment_id}").json()["feedback"]
+    assert [(f["verdict"], f["comment"]) for f in feedback] == [("risk_too_high", "Calm all week.")]
+
+
+@pytest.mark.parametrize("body", [{"verdict": "great"}, {"verdict": "other", "comment": "x" * 501}])
+def test_I9_invalid_feedback_is_refused(tmp_path, body):
+    api = make_interface(tmp_path, orchestrator_stub([]))
+    assessment_id = api.post("/api/assess", json=RHODES).json()["id"]
+    assert api.post(f"/api/assessments/{assessment_id}/feedback", json=body).status_code == 422
+
+
+def test_I9_no_feedback_on_a_refused_or_unknown_request(tmp_path):
+    api = make_interface(tmp_path, orchestrator_stub([]))
+    refused = api.post("/api/assess", json={**RHODES, "place": "atlantis"}).json()["id"]
+    for assessment_id in (refused, "nope"):
+        assert api.post(f"/api/assessments/{assessment_id}/feedback", json={"verdict": "other"}).status_code == 404
+
+
 def test_I9_unknown_assessment_id_is_404(tmp_path):
     assert make_interface(tmp_path, orchestrator_stub([])).get("/api/assessments/nope").status_code == 404
 
