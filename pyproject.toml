@@ -13,6 +13,7 @@ dependencies = [
 ashaway = "ashaway.cli:main"
 ashaway-ai = "ashaway.services.ai:main"
 ashaway-orchestrator = "ashaway.services.orchestrator:main"
+ashaway-interface = "ashaway.services.interface:main"
 
 [project.optional-dependencies]
 geo = ["geopandas>=0.14", "shapely>=2.0"]
@@ -26,7 +27,7 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [tool.setuptools.package-data]
-ashaway = ["resources/*.json", "resources/*.csv"]
+ashaway = ["resources/*.json", "resources/*.csv", "services/static/*.html"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
