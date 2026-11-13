@@ -86,6 +86,8 @@ ashaway-interface          # :8000, finds the orchestrator at ASHAWAY_ORCHESTRAT
 
 Then open http://127.0.0.1:8000.
 
+![The interface page after assessing Rhodes, 18-24 July 2023, in replay mode](img/task6-interface-rhodes.png)
+
 | Setting | Default |
 |---|---|
 | `ASHAWAY_AI_URL` | `http://127.0.0.1:8002` |
