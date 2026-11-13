@@ -22,7 +22,7 @@ Repo copy of the Trello tasks, so each commit can point at a task id.
 | T16 | Correct probabilities for the real fire base rate | AI5 | Should | ToDo |
 | T17 | Let users report a wrong assessment | AI8 | Should | ToDo |
 | T18 | AI inference server: loads the saved model and serves `/model` and `/predict` over HTTP | Task 6, NFR4 | Must | Done |
-| T19 | Orchestrator server: feeds, features and evidence checks; calls the AI server and turns its failures into clear errors | Task 6, FR3, FR5 | Must | ToDo |
+| T19 | Orchestrator server: feeds, features and evidence checks; calls the AI server and turns its failures into clear errors | Task 6, FR3, FR5 | Must | Done |
 | T20 | Interface server: validates requests, forwards them to the orchestrator, stores every request and result | Task 6, FR1, NFR3, NFR7 | Must | ToDo |
 | T21 | Test the three servers together over real HTTP, including AI and orchestrator outages | Task 6 | Must | ToDo |
 | T22 | Start commands, README and architecture notes for the three servers | Task 6 | Must | ToDo |

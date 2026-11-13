@@ -12,6 +12,7 @@ dependencies = [
 [project.scripts]
 ashaway = "ashaway.cli:main"
 ashaway-ai = "ashaway.services.ai:main"
+ashaway-orchestrator = "ashaway.services.orchestrator:main"
 
 [project.optional-dependencies]
 geo = ["geopandas>=0.14", "shapely>=2.0"]
