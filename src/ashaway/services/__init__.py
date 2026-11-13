@@ -65,4 +65,5 @@ def serve(make_app: Callable, service: str, argv: list[str] | None = None) -> No
     ap.add_argument("--port", type=int, default=DEFAULT_PORTS[service])
     args = ap.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format=f"%(asctime)s [{service}] %(message)s", datefmt="%H:%M:%S")
+    logging.getLogger("httpx").setLevel(logging.WARNING)  # our own line per request is enough
     uvicorn.run(make_app(), host=args.host, port=args.port, log_level="warning", access_log=False)

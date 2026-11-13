@@ -10,6 +10,7 @@ from __future__ import annotations
 import math
 import os
 import sys
+from pathlib import Path
 
 import pandas as pd
 from fastapi import FastAPI
@@ -28,8 +29,17 @@ class PredictRequest(BaseModel):
     explain: bool = False
 
 
+def bundle_dir() -> Path:
+    """ASHAWAY_BUNDLE if set, else models/live-v1 here, else the one in the repository."""
+    if "ASHAWAY_BUNDLE" in os.environ:
+        return Path(os.environ["ASHAWAY_BUNDLE"])
+    if DEFAULT_BUNDLE_DIR.exists():
+        return DEFAULT_BUNDLE_DIR
+    return Path(__file__).resolve().parents[3] / DEFAULT_BUNDLE_DIR
+
+
 def create_app(bundle: ModelBundle | None = None) -> FastAPI:
-    bundle = bundle or load_bundle(os.environ.get("ASHAWAY_BUNDLE", DEFAULT_BUNDLE_DIR))
+    bundle = bundle or load_bundle(bundle_dir())
     app = FastAPI(title="AshAway AI inference", version=bundle.version)
     add_request_tracing(app, SERVICE)
 

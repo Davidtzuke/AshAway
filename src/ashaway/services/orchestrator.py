@@ -28,6 +28,7 @@ from pydantic import BaseModel, Field
 
 from .. import feeds
 from ..assess import Assessor, load_destinations
+from ..replay import ReplayFetch
 from ..request import RequestRejected
 from . import REQUEST_ID, add_request_tracing, default_url, error_body, serve
 
@@ -113,13 +114,19 @@ def create_app(
     ai_url: str | None = None,
     *,
     ai_client: httpx.Client | None = None,
-    fetch: feeds.Fetch = feeds.http_get,
+    fetch: feeds.Fetch | None = None,
     clock: Callable = feeds.now_utc,
     firms_key: str | None = None,
     log_path: str | None = UPDATE_LOG,
     destinations: pd.DataFrame | None = None,
 ) -> FastAPI:
-    """`ai_client`, `fetch` and `clock` can be replaced, so tests run without the internet."""
+    """`ai_client`, `fetch` and `clock` can be replaced, so tests run without the internet.
+
+    With no `fetch`, feeds come from the internet, or from the recordings when
+    ASHAWAY_REPLAY=1 is set (an offline demo: weather to 31 July 2023, no FIRMS).
+    """
+    if fetch is None:
+        fetch = ReplayFetch(firms_file=None) if os.environ.get("ASHAWAY_REPLAY") == "1" else feeds.http_get
     client = ai_client or httpx.Client(base_url=ai_url or default_url("ai"), timeout=AI_TIMEOUT_S)
     places = load_destinations() if destinations is None else destinations
     app = FastAPI(title="AshAway orchestrator")

@@ -25,5 +25,5 @@ Repo copy of the Trello tasks, so each commit can point at a task id.
 | T19 | Orchestrator server: feeds, features and evidence checks; calls the AI server and turns its failures into clear errors | Task 6, FR3, FR5 | Must | Done |
 | T20 | Interface server: validates requests, forwards them to the orchestrator, stores every request and result | Task 6, FR1, NFR3, NFR7 | Must | Done |
 | T21 | Test the three servers together over real HTTP, including AI and orchestrator outages | Task 6 | Must | Done |
-| T22 | Start commands, README and architecture notes for the three servers | Task 6 | Must | ToDo |
+| T22 | Start commands, README and architecture notes for the three servers | Task 6 | Must | Done |
 | T23 | One-page preliminary architecture report | Task 6 | Must | ToDo |
