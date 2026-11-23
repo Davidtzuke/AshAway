@@ -7,6 +7,8 @@ from enum import Enum
 
 
 class EvidenceKind(str, Enum):
+    """The three labels every evidence item carries (FR8)."""
+
     FORECAST = "forecast"
     OBSERVATION = "observation"
     OFFICIAL_ALERT = "official alert"
@@ -14,6 +16,8 @@ class EvidenceKind(str, Enum):
 
 @dataclass(frozen=True)
 class EvidenceItem:
+    """One piece of evidence shown to the traveller, always with its source and date (NFR4)."""
+
     kind: EvidenceKind
     source: str
     observed_on: date
@@ -35,6 +39,8 @@ class SourceStatus:
 
 @dataclass(frozen=True)
 class EvidenceCheck:
+    """What `check_evidence` found. `sufficient` is False if anything critical is missing, old or contradicted."""
+
     missing_critical: list[str] = field(default_factory=list)
     stale_critical: list[str] = field(default_factory=list)
     conflicts: list[str] = field(default_factory=list)

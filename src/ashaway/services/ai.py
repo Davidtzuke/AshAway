@@ -25,6 +25,8 @@ MAX_ROWS = 1000
 
 
 class PredictRequest(BaseModel):
+    """Feature rows to score, and whether to explain each score."""
+
     rows: list[dict[str, float]] = Field(min_length=1, max_length=MAX_ROWS)
     explain: bool = False
 
@@ -39,6 +41,7 @@ def bundle_dir() -> Path:
 
 
 def create_app(bundle: ModelBundle | None = None) -> FastAPI:
+    """The AI server, serving `bundle` (by default the model in `bundle_dir()`)."""
     bundle = bundle or load_bundle(bundle_dir())
     app = FastAPI(title="AshAway AI inference", version=bundle.version)
     add_request_tracing(app, SERVICE)
@@ -74,6 +77,7 @@ def create_app(bundle: ModelBundle | None = None) -> FastAPI:
 
 
 def main(argv: list[str] | None = None) -> None:
+    """Command line: `ashaway-ai [--host H] [--port P]`."""
     serve(create_app, SERVICE, argv)
 
 

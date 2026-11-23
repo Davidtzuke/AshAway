@@ -21,6 +21,8 @@ class RequestRejected(ValueError):
 
 @dataclass(frozen=True)
 class AssessmentRequest:
+    """A request that passed every check: the destination's id and name, and the trip's first and last day."""
+
     destination_id: str
     destination_name: str
     start: date

@@ -6,7 +6,10 @@ import pytest
 
 from ashaway.assess import Assessor
 from ashaway.model.bundle import load_bundle
-from ashaway.replay import DEFAULT_DIR as FEEDS_DIR, ReplayFetch  # noqa: F401  (tests import both from here)
+from ashaway.replay import DEFAULT_DIR as FEEDS_DIR, ReplayFetch
+
+# Test files import these from here.
+__all__ = ["BUNDLE_DIR", "FEEDS_DIR", "FIRMS_TEST_KEY", "FIXED_NOW", "ReplayFetch"]
 
 TESTS_DIR = Path(__file__).parent
 BUNDLE_DIR = TESTS_DIR.parent / "models" / "live-v1"

@@ -21,6 +21,7 @@ ORDER = ["ai", "orchestrator", "interface"]  # each server needs the one before 
 
 
 def wait_until_up(url: str, process: subprocess.Popen, seconds: float = 60) -> bool:
+    """Wait until the server answers its health check, or until its process has stopped."""
     deadline = time.monotonic() + seconds
     while time.monotonic() < deadline and process.poll() is None:
         try:
@@ -33,6 +34,7 @@ def wait_until_up(url: str, process: subprocess.Popen, seconds: float = 60) -> b
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Start the three servers in order, then wait until Ctrl+C or until one of them stops."""
     ap = argparse.ArgumentParser(prog="python -m ashaway.services", description="Start the three AshAway servers.")
     ap.add_argument("--replay", action="store_true",
                     help="use recorded 2023 weather instead of the internet (dates up to 31 July 2023; no FIRMS)")

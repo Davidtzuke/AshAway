@@ -41,6 +41,8 @@ def _now() -> str:
 
 
 class Store:
+    """One SQLite file with two tables: assessments and feedback. Opens a short connection per call."""
+
     def __init__(self, path: str | Path):
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)

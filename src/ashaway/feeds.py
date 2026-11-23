@@ -37,6 +37,7 @@ KELVIN = 273.15
 
 
 def http_get(url: str, timeout: float = 20.0) -> str:
+    """Fetch a URL and return the body as text. The only function here that uses the network."""
     request = urllib.request.Request(url, headers={"User-Agent": "AshAway/0.1 (student project)"})
     with urllib.request.urlopen(request, timeout=timeout) as response:
         return response.read().decode("utf-8")
@@ -44,6 +45,8 @@ def http_get(url: str, timeout: float = 20.0) -> str:
 
 @dataclass(frozen=True)
 class FeedResult:
+    """One source's answer: its status, plus its data, evidence items or detection count when it had any."""
+
     status: SourceStatus
     data: pd.DataFrame | None = None
     items: list[EvidenceItem] = field(default_factory=list)
@@ -56,6 +59,7 @@ def _unavailable(name: str, critical: bool, retrieved_at: str, error: str) -> Fe
 
 
 def weather_url(lat: float, lon: float, start: date, end: date, today: date) -> str:
+    """Open-Meteo URL for daily weather: the reanalysis archive for past dates, the forecast service otherwise."""
     host = "archive-api" if end <= today - timedelta(days=ARCHIVE_DELAY_DAYS) else "api"
     path = "archive" if host == "archive-api" else "forecast"
     query = urllib.parse.urlencode({
@@ -85,6 +89,7 @@ def parse_weather(text: str) -> pd.DataFrame:
 
 
 def get_weather(lat: float, lon: float, start: date, end: date, as_of: date, today: date, fetch: Fetch, retrieved_at: str) -> FeedResult:
+    """Daily weather for a place and period, or an unavailable status. Gaps stay as NaN."""
     try:
         frame = parse_weather(fetch(weather_url(lat, lon, start, end, today)))
     except (OSError, ValueError) as exc:
@@ -96,6 +101,7 @@ def get_weather(lat: float, lon: float, start: date, end: date, as_of: date, tod
 
 
 def air_url(lat: float, lon: float, start: date, end: date) -> str:
+    """Open-Meteo air-quality URL for hourly PM2.5."""
     query = urllib.parse.urlencode({
         "latitude": lat, "longitude": lon, "start_date": start, "end_date": end, "hourly": "pm2_5", "timezone": "UTC",
     })
@@ -113,6 +119,7 @@ def parse_air(text: str) -> pd.Series:
 
 
 def get_air(lat: float, lon: float, as_of: date, fetch: Fetch, retrieved_at: str) -> FeedResult:
+    """Latest daily PM2.5 near the place as an observation, compared with the WHO guideline. Optional source."""
     try:
         daily = parse_air(fetch(air_url(lat, lon, as_of - timedelta(days=AIR_LOOKBACK_DAYS), as_of)))
     except (OSError, ValueError) as exc:
@@ -131,6 +138,7 @@ def get_air(lat: float, lon: float, as_of: date, fetch: Fetch, retrieved_at: str
 
 def firms_url(key: str, lat: float, lon: float, as_of: date, today: date, radius_km: float) -> str:
     # Roughly radius_km in degrees, padded. The exact distance is checked after download.
+    """NASA FIRMS area URL for VIIRS detections around a point: near-real-time for recent dates, archive otherwise."""
     d_lat = radius_km / 110.0 + 0.05
     d_lon = radius_km / (110.0 * max(np.cos(np.radians(lat)), 0.1)) + 0.05
     area = f"{lon - d_lon:.3f},{lat - d_lat:.3f},{lon + d_lon:.3f},{lat + d_lat:.3f}"
@@ -152,6 +160,7 @@ def parse_firms(text: str, lat: float, lon: float, radius_km: float, as_of: date
 
 
 def get_fires(lat: float, lon: float, as_of: date, today: date, fetch: Fetch, retrieved_at: str, key: str | None = None) -> FeedResult:
+    """Satellite fire detections within 20 km up to `as_of`. Without a FIRMS key the source is unavailable."""
     key = key if key is not None else os.environ.get("FIRMS_MAP_KEY")
     if not key:
         return _unavailable(FIRES, True, retrieved_at, "no FIRMS_MAP_KEY configured")
@@ -187,4 +196,5 @@ def log_update(path: str | Path, statuses: list[SourceStatus], destination_id: s
 
 
 def now_utc() -> datetime:
+    """The current time in UTC. Passed around as a function so tests can fix the clock."""
     return datetime.now(timezone.utc)

@@ -43,6 +43,10 @@ def create_app(
     orchestrator_client: httpx.Client | None = None,
     today: Callable[[], date] = lambda: datetime.now(timezone.utc).date(),
 ) -> FastAPI:
+    """The interface server, passing requests to the orchestrator at `orchestrator_url`.
+
+    `orchestrator_client` and `today` can be replaced in tests.
+    """
     client = orchestrator_client or httpx.Client(base_url=orchestrator_url or default_url("orchestrator"),
                                                  timeout=ORCHESTRATOR_TIMEOUT_S)
     places = supported_places()
@@ -137,6 +141,7 @@ def create_app(
 
 
 def main(argv: list[str] | None = None) -> None:
+    """Command line: `ashaway-interface [--host H] [--port P]`."""
     serve(create_app, SERVICE, argv)
 
 

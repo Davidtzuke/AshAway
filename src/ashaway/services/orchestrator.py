@@ -205,6 +205,7 @@ def create_app(
 
 
 def main(argv: list[str] | None = None) -> None:
+    """Command line: `ashaway-orchestrator [--host H] [--port P]`."""
     serve(create_app, SERVICE, argv)
 
 

@@ -11,6 +11,8 @@ from pydantic import BaseModel, Field
 
 
 class AssessBody(BaseModel):
+    """A request to assess one destination; `alternatives` asks for lower-risk options too."""
+
     place: str = Field(max_length=100)
     start: str = Field(max_length=20)
     end: str = Field(max_length=20)
@@ -18,6 +20,8 @@ class AssessBody(BaseModel):
 
 
 class CompareBody(BaseModel):
+    """A request to compare 2 to 11 destinations on the same dates."""
+
     places: list[str] = Field(min_length=2, max_length=11)
     start: str = Field(max_length=20)
     end: str = Field(max_length=20)

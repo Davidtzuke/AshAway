@@ -20,6 +20,7 @@ UPDATE_LOG = "logs/feed_updates.jsonl"
 
 
 def format_assessment(a: Assessment) -> str:
+    """The assessment as plain text: level in words, days, reasons, labelled evidence, warnings, disclaimer."""
     lines = [
         f"{a.destination}, {a.start} to {a.end}",
         f"Assessed as of {a.as_of}. Generated {a.generated_at}. Model {a.model_version}.",
@@ -47,6 +48,7 @@ def format_assessment(a: Assessment) -> str:
 
 
 def format_comparison(rows: list[dict]) -> str:
+    """One aligned row per destination: risk, peak score, evidence age and sources available."""
     out = [f"{'Destination':<18}{'Risk':<24}{'Peak score':>11}{'Evidence age':>14}{'Sources':>10}"]
     for r in rows:
         peak = f"{r['peak_probability']:.2f}" if r["peak_probability"] is not None else "-"
@@ -56,6 +58,7 @@ def format_comparison(rows: list[dict]) -> str:
 
 
 def build_parser() -> argparse.ArgumentParser:
+    """Arguments for `ashaway places`, `ashaway assess` and `ashaway compare`."""
     ap = argparse.ArgumentParser(prog="ashaway", description="Wildfire-risk advice for holiday destinations in Greece.")
     ap.add_argument("--bundle", default=str(DEFAULT_BUNDLE_DIR), help="model version directory")
     sub = ap.add_subparsers(dest="command", required=True)
@@ -73,6 +76,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None, assessor: Assessor | None = None) -> int:
+    """Run one command and return the exit code: 0 answered, 2 refused with the reason."""
     args = build_parser().parse_args(argv)
     if args.command == "places":
         print("\n".join(sorted(load_destinations()["name"])))
