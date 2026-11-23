@@ -1,8 +1,9 @@
-"""The interface server's storage: one SQLite file (Task 6, T20).
+"""AshAway's storage: one SQLite file, owned by the orchestrator (T20, moved in T24).
 
-Every request is kept with its outcome, so the team can see what was asked and
-what AshAway answered (NFR3). Nothing about the traveller is stored: no name,
-account, IP address or browser details (NFR7).
+Every assessment the orchestrator handles is kept with its outcome, and any
+feedback on it, so the team can see what was asked and what AshAway answered
+(NFR3, AI8). Nothing about the traveller is stored: no name, account, IP
+address or browser details (NFR7).
 """
 from __future__ import annotations
 
