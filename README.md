@@ -80,7 +80,6 @@ Results and their limits: `docs/model-results.md`.
 
 | File | Contents |
 |---|---|
-| `docs/final-report/` | Final report (Tasks 1-7) |
 | `docs/requirements/SRS.md` | Requirements, kept in line with the software; `CHANGELOG.md` lists every change |
 | `docs/architecture.md` | The three servers, their API, failure handling and how to run them |
 | `docs/model-results.md` | Data, model comparison and acceptance criteria on real data |
