@@ -31,4 +31,4 @@ Repo copy of the Trello tasks, so each commit can point at a task id.
 | T25 | Clean and document the code; run every test | Task 7 | Must | Done |
 | T26 | Check that the deployed model is the latest trained version and that its API works | Task 7, AI7 | Must | Done |
 | T27 | Update the SRS so it matches the software as built (v1.4) | Task 7 | Must | Done |
-| T28 | Final report: Tasks 1-6 combined into one story, plus Task 7 (teamwork, VSD, environment) | Task 7 | Must | Done |
+| T28 | Final report: Tasks 1-6 combined into one story, plus Task 7 (teamwork, VSD, environment); handed in as a PDF, not kept in the repository | Task 7 | Must | Done |
