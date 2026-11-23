@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AshAway</title>
+<style>
+  :root { --ink:#1e2124; --muted:#5d6166; --line:#dcdcd6; --panel:#f3f3f1; --accent:#c2410c;
+          --low:#2f7d4a; --medium:#a76b00; --high:#b42318; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--ink); background: #fff; }
+  main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { margin: 0 0 4px; font-size: 28px; }
+  .lead { margin: 0 0 24px; color: var(--muted); }
+  form { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 12px; align-items: end; }
+  label { display: grid; gap: 4px; font-size: 13px; font-weight: 600; color: var(--muted); }
+  select, input, button { font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 4px; }
+  button { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; cursor: pointer; }
+  button:disabled { opacity: .6; cursor: wait; }
+  button.secondary { background: #fff; color: var(--accent); font-weight: 500; }
+  button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (max-width: 620px) { form { grid-template-columns: 1fr 1fr; } form label:first-child, form button { grid-column: 1 / -1; } }
+  #out { margin-top: 28px; }
+  .level { display: inline-block; padding: 4px 10px; border-radius: 4px; color: #fff; font-weight: 700; text-transform: uppercase; }
+  .level.low { background: var(--low); } .level.medium { background: var(--medium); } .level.high { background: var(--high); }
+  .level.none { background: var(--muted); }
+  h2 { font-size: 18px; margin: 24px 0 8px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  td, th { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+  ul { padding-left: 20px; margin: 0; }
+  li { margin-bottom: 4px; }
+  .kind { font: 600 11px/1 system-ui, sans-serif; letter-spacing: .05em; padding: 2px 6px; border: 1px solid currentColor; border-radius: 3px; margin-right: 6px; }
+  .warn { color: var(--medium); }
+  .error { padding: 12px 14px; border-radius: 4px; background: #fbeae8; color: var(--high); }
+  .note { font-size: 13px; color: var(--muted); }
+  .panel { background: var(--panel); border-radius: 4px; padding: 12px 14px; margin-top: 16px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>AshAway</h1>
+  <p class="lead">Wildfire risk for your trip to Greece, May to October, up to 14 days ahead. Past dates are replayed as if you asked the day before.</p>
+  <form id="ask">
+    <label>Destination <select id="place" required></select></label>
+    <label>From <input id="start" type="date" value="2023-07-18" required></label>
+    <label>To <input id="end" type="date" value="2023-07-24" required></label>
+    <button id="go" type="submit">Assess</button>
+  </form>
+  <div id="out" aria-live="polite"></div>
+</main>
+<script>
+const out = document.getElementById("out");
+const el = (tag, text, cls) => { const e = document.createElement(tag); if (text != null) e.textContent = text; if (cls) e.className = cls; return e; };
+
+fetch("/api/destinations").then(r => r.json()).then(list => {
+  const sel = document.getElementById("place");
+  for (const d of list) { const o = el("option", d.name); o.value = d.id; if (d.id === "rhodes") o.selected = true; sel.append(o); }
+});
+
+function list(title, items, render) {
+  if (!items || !items.length) return;
+  out.append(el("h2", title));
+  const ul = el("ul");
+  for (const item of items) ul.append(render(item));
+  out.append(ul);
+}
+
+function show(data) {
+  out.replaceChildren();
+  if (data.error) { out.append(el("p", data.error.message, "error")); return; }
+  const a = data.assessment;
+  out.append(el("h2", `${a.destination}, ${a.start} to ${a.end}`));
+  const badge = el("span", a.level || "insufficient evidence", "level " + (a.level || "none"));
+  out.append(badge, el("p", a.level_text));
+  if (a.days.length) {
+    out.append(el("h2", "Risk per day"));
+    const t = el("table");
+    for (const d of a.days) { const tr = el("tr"); tr.append(el("td", d.date), el("td", d.level), el("td", d.probability.toFixed(2))); t.append(tr); }
+    out.append(t);
+  }
+  list("Main reasons", a.reasons, r => el("li", r));
+  list("Evidence", a.evidence, e => { const li = el("li"); li.append(el("span", e.kind.toUpperCase(), "kind"), `${e.observed_on}, ${e.source}: ${e.summary}`); return li; });
+  list("Warnings", a.warnings, w => el("li", w, "warn"));
+  list("Lower estimated risk on the same dates", a.alternatives, x => el("li", `${x.name}: ${x.level} (peak score ${x.peak_probability.toFixed(2)})`));
+  out.append(el("p", a.disclaimer, "panel"));
+  const fb = el("div", null, "panel");
+  fb.append(el("p", "Does this look wrong? Tell us. We review every report; it is not used to change answers automatically.", "note"));
+  for (const [verdict, label] of [["risk_too_high", "Risk too high"], ["risk_too_low", "Risk too low"], ["evidence_wrong", "Evidence wrong"]]) {
+    const b = el("button", label, "secondary"); b.type = "button"; b.style.marginRight = "8px";
+    b.addEventListener("click", async () => {
+      const r = await fetch(`/api/assessments/${data.id}/feedback`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ verdict }) });
+      fb.replaceChildren(el("p", r.ok ? "Thank you. Your report was saved." : "Your report could not be saved.", "note"));
+    });
+    fb.append(b);
+  }
+  out.append(fb);
+  const o = data.trace.orchestrator;
+  out.append(el("p", `Assessment ${data.id} · interface → orchestrator → AI server (${o.ai_calls} model calls, ${o.duration_ms} ms) · model ${a.model_version}`, "note"));
+}
+
+document.getElementById("ask").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const go = document.getElementById("go");
+  go.disabled = true; out.replaceChildren(el("p", "Assessing…", "note"));
+  try {
+    const r = await fetch("/api/assess", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ place: document.getElementById("place").value, start: document.getElementById("start").value, end: document.getElementById("end").value }) });
+    show(await r.json());
+  } catch (e) {
+    out.replaceChildren(el("p", "AshAway could not be reached. Is the interface server running?", "error"));
+  } finally { go.disabled = false; }
+});
+</script>
+</body>
+</html>

@@ -16,7 +16,7 @@ GitHub Actions runs both on every push and pull request (`.github/workflows/test
 | 114 real Track A samples (3,420 rows): 12 positive and 26 negative per split | `tests/data/track_a_sample/` | I1, I2 | Real column names, gaps and fire-day rows, small enough for CI. Mesogeos, CC BY 4.0 |
 | Recorded Open-Meteo weather and air quality responses, 2023 | `tests/data/feeds/` | I3-I6 | Real responses, including the July 2023 Rhodes heatwave. Open-Meteo, CC BY 4.0 |
 | Hand-written FIRMS CSV files | `tests/data/feeds/*firms*.csv`, `no_fires.csv` | I3, I4 | **Not real detections.** They follow NASA's documented columns, because the FIRMS key isn't set up yet (T12) |
-| Simulated HTTP 500 and missing key | `tests/conftest.py` | I4, I6 | A failing service on demand, which real feeds can't give |
+| Simulated HTTP 500 and missing key | `src/ashaway/replay.py`, `tests/conftest.py` | I4, I6, I8-I10 | A failing service on demand, which real feeds can't give |
 
 ## Unit tests
 
@@ -37,6 +37,7 @@ GitHub Actions runs both on every push and pull request (`.github/workflows/test
 | U6 | `lower_risk_alternatives` | High risk; candidates at high, medium, low, and low with poor coverage | Low then medium, others excluded | FR6, AI6 |
 | U7 | `choose_threshold_f2`, `fit_calibration`, `high_threshold` | Toy labels and scores | Threshold 0.4; monotonic calibration; lowest score reaching the precision target | NFR9, AI5 |
 | U8 | `in_greece` | Athens, Rhodes, Corfu; Izmir, Tirana, open sea | True; False | AI4 |
+| U9 | `RemoteModel` (Task 6) | Fake AI server in memory: rows with extra columns; an unreachable server; an HTTP 500 | Only the model's features are sent, in order; probabilities read back; `ModelUnavailable` raised | Task 6 |
 
 ## Integration tests
 
@@ -55,6 +56,10 @@ GitHub Actions runs both on every push and pull request (`.github/workflows/test
 | | | Rhodes and Chania, same dates | One row each with risk, evidence age, sources | FR7 |
 | I6 | Command line, service, feeds | `assess rhodes 2023-07-18 2023-07-24` | Exit 0; risk in words, reasons, labels, disclaimer | UR1-UR4, NFR6 |
 | | | `assess atlantis ...`; December dates | Exit 2; the reason, and no risk level | FR9 |
+| I7 | AI server (Task 6) | Real Rhodes feature rows over HTTP; a row missing `rain_7d`; malformed bodies | Same probabilities as the model in-process; 422 naming the missing feature; 422 | Task 6, NFR4 |
+| I8 | Orchestrator + AI server (Task 6) | Rhodes 18-24 July 2023; `atlantis`; AI server unreachable; weather down | Same assessment as Task 5; 422 without contacting the AI server; 503 `ai_unavailable`; insufficient evidence | Task 6, FR5 |
+| I9 | Interface + storage (Task 6) | Valid request; bad place, date or season; orchestrator unreachable; AI outage passed on; feedback | Forwarded and stored; 400 and never forwarded; 503 stored as unavailable; 503; feedback stored. Importing the interface loads no model code | Task 6, FR1, NFR7, AI8 |
+| I10 | All three servers on real sockets (Task 6) | Rhodes 18-24 July 2023 through the interface; `atlantis`; AI or orchestrator down; weather down | One request id through all three; same answer as Task 5; stored. 400 with nothing forwarded. 503. Warning reaches the traveller | Task 6 |
 
 ## Do the tests detect bugs?
 
