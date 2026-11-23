@@ -10,7 +10,7 @@ Python 3.10 or newer (CI uses 3.12).
 
 ```
 pip install -e ".[dev]"
-pytest                                  # 160 tests, no internet needed
+pytest                                  # 164 tests, no internet needed
 python -m ashaway.services --replay     # the three servers, with recorded 2023 weather
 ```
 
