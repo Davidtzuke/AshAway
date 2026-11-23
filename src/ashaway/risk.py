@@ -57,6 +57,7 @@ def risk_level(probability: float, medium_from: float, high_from: float) -> str:
 
 
 def highest_level(levels: list[str]) -> str:
+    """The worst level among the days, which becomes the level for the whole trip."""
     return max(levels, key=LEVEL_ORDER.__getitem__)
 
 

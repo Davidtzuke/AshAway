@@ -70,6 +70,7 @@ def municipality_code_from_lau(lau_code: str) -> str:
 
 
 def is_mount_athos(muni_code: str, athos_code: str = MOUNT_ATHOS_CODE) -> bool:
+    """True for a municipality code belonging to Mount Athos, which AshAway leaves out."""
     return str(muni_code)[:4] == athos_code
 
 

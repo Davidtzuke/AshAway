@@ -152,6 +152,7 @@ def build_live_bundle(train: pd.DataFrame, val: pd.DataFrame, version: str) -> M
 
 
 def split_counts(train: pd.DataFrame, val: pd.DataFrame, test: pd.DataFrame) -> dict:
+    """Size, share and positives of each split, for the training record (NFR8)."""
     total = len(train) + len(val) + len(test)
     return {
         name: {"n": len(part), "percent": round(100 * len(part) / total, 1), "positives": int(part[LABEL].sum())}
@@ -160,6 +161,7 @@ def split_counts(train: pd.DataFrame, val: pd.DataFrame, test: pd.DataFrame) -> 
 
 
 def run_real(data_dir: Path, report_path: Path, bundle_dir: Path) -> dict:
+    """Train and compare all models on Mesogeos Track A, write the training record and save the product model."""
     df, data_report = load_track_a_with_report(data_dir)
     train, val, test = temporal_split(df)
     parts = {"val": val, **evaluation_subsets(test)}
@@ -193,6 +195,7 @@ def run_real(data_dir: Path, report_path: Path, bundle_dir: Path) -> dict:
 
 
 def run_synthetic(report_path: Path, model_path: Path, n: int, seed: int) -> dict:
+    """Run the pipeline on synthetic data. The numbers test the code, not the model."""
     log.warning(SYNTHETIC_BANNER)
     df = make_synthetic_cell_days(n=n, seed=seed)
     features = feature_columns(df)
@@ -219,6 +222,7 @@ def run_synthetic(report_path: Path, model_path: Path, n: int, seed: int) -> dic
 
 
 def format_table(results: dict, splits: tuple[str, ...] = ("val", "test", "test_greece_may_oct")) -> str:
+    """A plain-text table of PR-AUC, AUROC and recall per model and split."""
     rows = [f"{'model':<24}{'split':<22}{'n':>6}{'PR-AUC':>8}{'AUROC':>8}{'recall':>8}{'prec':>7}{'F2':>7}{'Brier':>8}"]
     for name, entry in results["models"].items():
         for split in splits:
@@ -232,6 +236,7 @@ def format_table(results: dict, splits: tuple[str, ...] = ("val", "test", "test_
 
 
 def main(argv: list[str] | None = None) -> None:
+    """Command line: `python -m ashaway.model.train` (real data) or with `--synthetic`."""
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--synthetic", action="store_true", help="use the synthetic generator (pipeline test only)")
     ap.add_argument("--data-dir", type=Path, default=DEFAULT_MESOGEOS_DIR)

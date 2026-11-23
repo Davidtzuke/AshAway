@@ -25,6 +25,7 @@ RESOURCES = Path(__file__).parent / "resources"
 
 @lru_cache(maxsize=1)
 def load_destinations() -> pd.DataFrame:
+    """The 11 pilot destinations: coordinates, model grid cell and the cell's fixed features, indexed by id."""
     return pd.read_csv(RESOURCES / "pilot_destinations.csv").set_index("id", drop=False)
 
 
@@ -64,6 +65,8 @@ def lower_risk_alternatives(current_level: str, candidates: list[dict], limit: i
 
 @dataclass(frozen=True)
 class DayRisk:
+    """One trip day: its calibrated fire score and the risk level that score maps to."""
+
     date: date
     probability: float
     level: str
@@ -71,6 +74,12 @@ class DayRisk:
 
 @dataclass
 class Assessment:
+    """Everything AshAway tells a traveller about one destination and date range.
+
+    `level` is None when the evidence does not support stating one (FR5); `forecast_level`
+    keeps what the model alone said, so the reason for withholding it stays visible.
+    """
+
     destination_id: str
     destination: str
     start: date
@@ -96,6 +105,12 @@ class Assessment:
 
 
 class Assessor:
+    """Answers assessment and comparison requests (FR1-FR8).
+
+    The model, feeds and clock are passed in, so the same logic runs in one process
+    (the command line), behind the orchestrator with a RemoteModel, and in tests.
+    """
+
     def __init__(
         self,
         bundle: ModelBundle,

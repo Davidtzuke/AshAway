@@ -1,4 +1,4 @@
-"""I8: the orchestrator server with recorded feeds and the AI server behind it."""
+"""I8: the orchestrator server with recorded feeds, the AI server behind it, and its storage."""
 import httpx
 import numpy as np
 import pytest
@@ -18,7 +18,8 @@ def ai_client(bundle):
 
 def make_orchestrator(ai_client, tmp_path, down=()):
     app = orchestrator.create_app(ai_client=ai_client, fetch=ReplayFetch(down), clock=lambda: FIXED_NOW,
-                                  firms_key=FIRMS_TEST_KEY, log_path=tmp_path / "updates.jsonl")
+                                  firms_key=FIRMS_TEST_KEY, log_path=tmp_path / "updates.jsonl",
+                                  db_path=tmp_path / "ashaway.sqlite3")
     return TestClient(app)
 
 
@@ -68,3 +69,40 @@ def test_I8_health_and_destinations(ai_client, tmp_path):
     client = make_orchestrator(ai_client, tmp_path)
     assert client.get("/health").json()["ai"] == {"status": "ok", "model_version": "live-v1"}
     assert {"id": "rhodes", "name": "Rhodes"} in client.get("/destinations").json()
+
+
+def test_I8_every_assessment_is_stored_with_its_outcome(ai_client, tmp_path):
+    client = make_orchestrator(ai_client, tmp_path)
+    made = client.post("/assess", json=RHODES).json()
+    stored = client.get(f"/assessments/{made['id']}").json()
+    assert (stored["outcome"], stored["level"], stored["model_version"]) == ("assessed", "high", "live-v1")
+    assert stored["detail"] == made["result"] and stored["request_id"] == made["trace"]["orchestrator"]["request_id"]
+    assert stored["feedback"] == []
+    assert client.get("/assessments").json()[0]["id"] == made["id"]
+
+
+def test_I8_refusals_and_outages_are_stored_too(ai_client, tmp_path):
+    refused = make_orchestrator(ai_client, tmp_path).post("/assess", json={**RHODES, "place": "atlantis"}).json()
+    down = httpx.Client(base_url="http://127.0.0.1:9", transport=httpx.HTTPTransport(retries=0), timeout=1)
+    failed = make_orchestrator(down, tmp_path).post("/assess", json=RHODES).json()
+    client = make_orchestrator(ai_client, tmp_path)
+    assert client.get(f"/assessments/{refused['id']}").json()["outcome"] == "rejected"
+    stored = client.get(f"/assessments/{failed['id']}").json()
+    assert (stored["outcome"], stored["level"], stored["detail"]["error"]["code"]) == ("unavailable", None, "ai_unavailable")
+
+
+def test_I8_feedback_is_stored_beside_the_assessment(ai_client, tmp_path):
+    client = make_orchestrator(ai_client, tmp_path)
+    made = client.post("/assess", json=RHODES).json()["id"]
+    r = client.post(f"/assessments/{made}/feedback", json={"verdict": "risk_too_high", "comment": "Calm all week."})
+    assert r.status_code == 201 and r.json() == {"saved": True, "assessment_id": made, "model_version": "live-v1"}
+    feedback = client.get(f"/assessments/{made}").json()["feedback"]
+    assert [(f["verdict"], f["comment"]) for f in feedback] == [("risk_too_high", "Calm all week.")]
+
+
+def test_I8_no_feedback_on_a_refused_or_unknown_request(ai_client, tmp_path):
+    client = make_orchestrator(ai_client, tmp_path)
+    refused = client.post("/assess", json={**RHODES, "place": "atlantis"}).json()["id"]
+    for assessment_id in (refused, "nope"):
+        assert client.post(f"/assessments/{assessment_id}/feedback", json={"verdict": "other"}).status_code == 404
+    assert client.get("/assessments/nope").status_code == 404

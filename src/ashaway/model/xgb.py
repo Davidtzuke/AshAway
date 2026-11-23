@@ -112,6 +112,7 @@ def evaluate_scores(y: np.ndarray, scores: np.ndarray, threshold: float, probabi
 
 
 def save_model(model: XGBClassifier, path: str | Path = DEFAULT_MODEL_PATH) -> Path:
+    """Save an XGBoost model as JSON."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     model.save_model(path)
@@ -119,6 +120,7 @@ def save_model(model: XGBClassifier, path: str | Path = DEFAULT_MODEL_PATH) -> P
 
 
 def load_model(path: str | Path = DEFAULT_MODEL_PATH) -> XGBClassifier:
+    """Load an XGBoost model saved by `save_model`."""
     model = XGBClassifier()
     model.load_model(Path(path))
     return model

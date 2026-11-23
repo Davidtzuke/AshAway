@@ -45,3 +45,19 @@ The product model can't use the all-features version, because `ndvi`, `lai`, `sm
 - **Season helps the model.** Negatives are spread across the year, and fires cluster in summer. The May-October results are the fairer view: they are lower, and that is what AshAway's scope covers.
 - **This is a cell-day score.** The SRS success metric for FR2 is recall on affected destinations at municipality level, and that has not been measured yet (T15).
 - **Weather inputs in replay runs are reanalysis, not forecasts.** Real forecast weather is less accurate, so live skill will be lower.
+
+## The deployed model (checked in Task 7)
+
+| Item | Value |
+|---|---|
+| Version | `live-v1`, in `models/live-v1/` (`model.json` and `card.json`) |
+| Trained | 3 November 2026, on Mesogeos Track A (train 2006-2019, calibration and cut-offs on 2020) |
+| Inputs | The 20 product features (weather of the day before, 7-day aggregates, stored terrain, land cover, roads, population) |
+| Trees | 600 built, 570 used: early stopping chose round 570, and the saved model predicts with exactly those |
+| Risk cut-offs | Medium from 0.198 (best F2 on 2020), high from 0.467 (at least 75% precision on 2020) |
+| Library | Saved with XGBoost 3.4.1, the version the tests run with |
+| Served by | The AI server: `GET /model` gives version, features and cut-offs; `POST /predict` gives calibrated probabilities and feature contributions |
+
+`live-v1` is the latest version: no training run has happened since. Test I11 compares the deployed files with `reports/training_record.json`, which the same training run writes, so a retrained model that is not deployed (or the other way round) fails the tests. Test I7 checks that the AI server's answers equal the model's own.
+
+**Updating the model (SRS AI7).** Retrain with `python -m ashaway.model.train`, which writes a new version directory and training record. Check the result against the acceptance criteria above, and only then point the AI server at it (`ASHAWAY_BUNDLE`, or replace `models/live-v1`). The orchestrator and interface do not change: they ask the AI server which version it serves.

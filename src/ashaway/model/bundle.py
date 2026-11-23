@@ -20,6 +20,8 @@ DEFAULT_BUNDLE_DIR = Path("models/live-v1")
 
 @dataclass(frozen=True)
 class ModelBundle:
+    """A versioned model the product can use: XGBoost, its calibration curve and its two risk cut-offs."""
+
     version: str
     features: list[str]
     model: XGBClassifier
@@ -58,6 +60,7 @@ class ModelBundle:
 
 
 def load_bundle(directory: str | Path = DEFAULT_BUNDLE_DIR) -> ModelBundle:
+    """Load a model version from its directory (`model.json` and `card.json`)."""
     directory = Path(directory)
     card = json.loads((directory / "card.json").read_text())
     model = XGBClassifier()

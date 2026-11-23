@@ -56,9 +56,10 @@ def system(bundle, tmp_path):
             running.append(LiveServer(ai.create_app(bundle)))
             ai_url = running[-1].url
         orch = LiveServer(orchestrator.create_app(ai_url, fetch=ReplayFetch(down), clock=lambda: FIXED_NOW,
-                                                  firms_key=FIRMS_TEST_KEY, log_path=tmp_path / "updates.jsonl"))
+                                                  firms_key=FIRMS_TEST_KEY, log_path=tmp_path / "updates.jsonl",
+                                                  db_path=tmp_path / "ashaway.sqlite3"))
         running.append(orch)
-        front = LiveServer(interface.create_app(orch.url, db_path=tmp_path / "interface.sqlite3"))
+        front = LiveServer(interface.create_app(orch.url))
         running.append(front)
         return {"interface": front.url, "orchestrator": orch.url, "ai": ai_url}
 
@@ -85,7 +86,7 @@ def test_I10_request_travels_interface_orchestrator_ai_and_back(system, make_ass
     # Same answer as the single-process version tested in Task 5.
     local = make_assessor().assess(RHODES["place"], RHODES["start"], RHODES["end"])
     np.testing.assert_allclose([d["probability"] for d in a["days"]], [d.probability for d in local.days], rtol=0, atol=1e-12)
-    # Stored by the interface server.
+    # Stored behind the orchestrator, and fetched through the interface.
     stored = httpx.get(f"{urls['interface']}/api/assessments/{body['id']}").json()
     assert (stored["outcome"], stored["level"]) == ("assessed", "high")
 
@@ -106,9 +107,9 @@ def test_I10_ai_server_down_gives_503_without_a_risk_level(system):
     assert httpx.get(f"{urls['interface']}/health").json()["orchestrator"] == {"status": "degraded", "ai": "unavailable"}
 
 
-def test_I10_orchestrator_down_gives_503(system, tmp_path):
+def test_I10_orchestrator_down_gives_503(system):
     urls = system()
-    front = LiveServer(interface.create_app(closed_port_url(), db_path=tmp_path / "alone.sqlite3"))
+    front = LiveServer(interface.create_app(closed_port_url()))
     try:
         r = httpx.post(f"{front.url}/api/assess", json=RHODES)
         assert r.status_code == 503 and r.json()["error"]["code"] == "orchestrator_unavailable"
