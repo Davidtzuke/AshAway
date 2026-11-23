@@ -30,5 +30,5 @@ Repo copy of the Trello tasks, so each commit can point at a task id.
 | T24 | Move the storage behind the orchestrator, so the interface keeps no data | Task 6 feedback | Must | Done |
 | T25 | Clean and document the code; run every test | Task 7 | Must | Done |
 | T26 | Check that the deployed model is the latest trained version and that its API works | Task 7, AI7 | Must | Done |
-| T27 | Update the SRS so it matches the software as built (v1.3) | Task 7 | Must | ToDo |
+| T27 | Update the SRS so it matches the software as built (v1.4) | Task 7 | Must | Done |
 | T28 | Final report: Tasks 1-6 combined into one story, plus Task 7 (teamwork, VSD, environment) | Task 7 | Must | ToDo |
