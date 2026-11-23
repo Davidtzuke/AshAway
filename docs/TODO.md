@@ -27,3 +27,8 @@ Repo copy of the Trello tasks, so each commit can point at a task id.
 | T21 | Test the three servers together over real HTTP, including AI and orchestrator outages | Task 6 | Must | Done |
 | T22 | Start commands, README and architecture notes for the three servers | Task 6 | Must | Done |
 | T23 | One-page preliminary architecture report | Task 6 | Must | Done |
+| T24 | Move the storage behind the orchestrator, so the interface keeps no data | Task 6 feedback | Must | ToDo |
+| T25 | Clean and document the code; run every test | Task 7 | Must | ToDo |
+| T26 | Check that the deployed model is the latest trained version and that its API works | Task 7, AI7 | Must | ToDo |
+| T27 | Update the SRS so it matches the software as built (v1.3) | Task 7 | Must | ToDo |
+| T28 | Final report: Tasks 1-6 combined into one story, plus Task 7 (teamwork, VSD, environment) | Task 7 | Must | ToDo |
