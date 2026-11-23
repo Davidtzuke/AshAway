@@ -60,6 +60,7 @@ GitHub Actions runs both on every push and pull request (`.github/workflows/test
 | I8 | Orchestrator + AI server + storage (Task 6, 7) | Rhodes 18-24 July 2023; `atlantis`; AI server unreachable; weather down; feedback | Same assessment as Task 5; 422 without contacting the AI server; 503 `ai_unavailable`; insufficient evidence. Every outcome stored; feedback stored beside it | Task 6, FR5, NFR3, AI8 |
 | I9 | Interface (Task 6, 7) | Valid request; bad place, date or season; orchestrator unreachable; AI outage passed on; stored-assessment and feedback requests | Forwarded; 400 and never forwarded; 503; 503; forwarded to the orchestrator, bad feedback refused first. Importing the interface loads no model or storage code | Task 6, FR1, NFR7 |
 | I10 | All three servers on real sockets (Task 6) | Rhodes 18-24 July 2023 through the interface; `atlantis`; AI or orchestrator down; weather down | One request id through all three; same answer as Task 5; stored. 400 with nothing forwarded. 503. Warning reaches the traveller | Task 6 |
+| I11 | Deployed model + training record (Task 7) | `models/live-v1/` and `reports/training_record.json` | Same version, cut-offs, features and boosting rounds; the record is from real data | AI7, NFR4 |
 
 ## Do the tests detect bugs?
 
